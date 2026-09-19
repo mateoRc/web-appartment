@@ -1,5 +1,9 @@
-// Replace these values with the owner's contact details before publishing.
-const CONTACT = { whatsapp: "", email: "", phone: "" };
+// Owner contact details. Keep the HTML fallback links in sync when updating.
+const CONTACT = {
+  whatsapp: "385981700612",
+  email: "marizahm305@gmail.com",
+  phone: "+385 98 170 0612",
+};
 const greeting = "Hello, I’m interested in the beachfront apartment in Rabac";
 const whatsappUrl = (message) =>
   `https://wa.me/${CONTACT.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(message)}`;
@@ -18,8 +22,6 @@ if (CONTACT.phone) {
   link.textContent = CONTACT.phone;
   phone.replaceWith(link);
 }
-if (CONTACT.whatsapp && CONTACT.email && CONTACT.phone)
-  document.querySelector(".contact-note").hidden = true;
 document.getElementById("year").textContent = new Date().getFullYear();
 const toggle = document.querySelector(".menu-toggle");
 const navigation = document.getElementById("navigation");

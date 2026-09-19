@@ -12,9 +12,9 @@ Alternatively, open `index.html` directly. Google Maps and Google Fonts require 
 
 Cloudflare Workers deployment is configured in `wrangler.jsonc`. Set the dashboard build command to `node build.mjs`, deploy command to `npx wrangler deploy`, and version command to `npx wrangler versions upload`. Keep production branch `main` and root `/`. Commit and push the configuration and build script before triggering a new deployment. The build copies only the website files to `dist`; never use the repository root as the assets directory.
 
-- Set the owner's WhatsApp number (international digits), email and phone in `CONTACT` at the beginning of `script.js`. Also update the HTML fallback contact links for visitors without JavaScript. Until configured, WhatsApp opens its share flow with the requested message; it cannot open an owner-specific chat without the owner's number.
+- Owner contacts are configured: WhatsApp/phone `+385 98 170 0612`, email `marizahm305@gmail.com`. Update `CONTACT` in `script.js` and the HTML fallback links together when changing them.
 - The page now uses five supplied apartment photos: terrace hero, kitchen/dining, living room, and both bedrooms. Originals are unchanged. The aerial and bathroom photos remain in assets but are not loaded by the page.
-- Availability buttons open WhatsApp. The form validates dates and opens WhatsApp with the guest's name, dates, optional email and message prefilled. Guests review and send the message themselves. Configure `CONTACT.whatsapp` for direct delivery to the owner; until then, WhatsApp uses a generic share flow. A visible continuation link is provided if a browser blocks the new tab.
+- Availability buttons open the owner's WhatsApp chat. The form validates dates and opens WhatsApp with the guest's name, dates, optional email and message prefilled. Guests review and send the message themselves. A visible continuation link is provided if a browser blocks the new tab.
 - Confirm amenities and third-party platform availability with the owner. The Google Maps embed and directions link use the supplied full address; check Google's marker against the entrance before publishing.
 - Add the final domain's canonical URL and absolute Open Graph image URL when deployed.
 
@@ -24,4 +24,6 @@ The terrace is the strongest lead photo because it shows the actual waterfront s
 
 Google Fonts provides DM Sans and Manrope; system font fallbacks keep the page usable offline. Photos are served locally. The hero is eagerly loaded and gallery photos are lazy loaded. Navigation and content remain available without JavaScript. Gallery supports keyboard navigation, Escape, modal focus containment, and reduced motion preferences.
 
-Booking.com and Airbnb brand icons are served locally from `assets/*-logo.svg`, sourced from Simple Icons via cdn.simpleicons.org. They are displayed without listing links.
+Booking.com and Airbnb brand icons are served locally from `assets/*-logo.svg`, sourced from Simple Icons via cdn.simpleicons.org. The WhatsApp icon uses the same source and is embedded inline. Booking.com links to the owner-supplied listing; Airbnb is displayed without a link.
+
+The finish includes a matching native scrollbar, fine accent lines, and an illustrated coastal divider. Desktop background parallax is limited to visible sections, uses passive scrolling and animation frames, and turns off on mobile and for reduced-motion preferences.
