@@ -11,6 +11,7 @@ const files = [
   "styles.css",
   "script.js",
   "assets/terrace.jpg",
+  "assets/rabac-divider.jpg",
   "assets/details.jpg",
   "assets/living.jpg",
   "assets/bedroom.jpg",
