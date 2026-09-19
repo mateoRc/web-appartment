@@ -16,3 +16,26 @@
 .whatsapp-button{gap:14px;white-space:nowrap;min-width:0;max-width:100%}
 .whatsapp-button>svg:first-child{width:25px;height:25px;overflow:visible}
 .hero-details{margin-bottom:28px}
+
+/* Unframed gallery controls with generous touch targets. */
+#lightbox{position:fixed;inset:0;margin:0;width:100%;max-width:none;height:100dvh;max-height:none;padding:68px;overflow:hidden;background:transparent;align-items:center;justify-content:center}
+#lightbox[open]{display:flex}
+#lightbox figure{margin:0;width:100%;max-width:1100px;min-width:0}
+#lightbox img{max-height:calc(100dvh - 180px);width:100%;object-fit:contain}
+#lightbox figcaption{color:#d4dcd8;font-size:12px;padding:16px 0}
+#lightbox button{width:48px;height:48px;background:none;border:0;border-radius:0;padding:10px;color:#fff;opacity:.8;transition:opacity .2s}
+#lightbox button:hover,#lightbox button:focus-visible{opacity:1}
+#lightbox button svg{width:28px;height:28px;stroke-width:1.5}
+#lightbox .lightbox-prev{left:12px;top:50%;transform:translateY(-50%)}
+#lightbox .lightbox-next{right:12px;top:50%;transform:translateY(-50%)}
+#lightbox .lightbox-close{right:16px;top:16px}
+.booking-platforms{margin-top:28px}
+.booking-platforms>p{font-size:10px;color:#687565;margin-bottom:12px}
+.platform-logos{display:flex;align-items:center;gap:25px;flex-wrap:wrap}
+.platform-logo{display:inline-flex;align-items:center;gap:7px;line-height:1;font-size:20px;font-weight:700;letter-spacing:-.8px}
+.platform-logo img{display:block;flex-shrink:0}
+.booking-logo{color:#003b95;font-size:18px;letter-spacing:-.7px}
+.booking-logo>span>span{font-weight:500}
+.airbnb-logo{color:#ff5a5f;font-weight:650}
+#whatsapp-draft{margin-top:12px}
+@media(max-width:700px){#lightbox{padding:68px 48px}#lightbox .lightbox-prev{left:0}#lightbox .lightbox-next{right:0}#lightbox .lightbox-close{right:10px;top:12px}.platform-logos{gap:22px}.booking-form .button{gap:12px;font-size:11px}}

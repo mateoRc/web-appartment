@@ -1,8 +1,9 @@
 // Replace these values with the owner's contact details before publishing.
 const CONTACT = { whatsapp: '', email: '', phone: '' };
 const greeting = 'Hello, I’m interested in the beachfront apartment in Rabac';
+const whatsappUrl = message => `https://wa.me/${CONTACT.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
 document.querySelectorAll('[data-whatsapp]').forEach(link => {
-  link.href = `https://wa.me/${CONTACT.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(greeting)}`;
+  link.href = whatsappUrl(greeting);
 });
 if (CONTACT.email) {
   const email = document.querySelector('[data-email]');
@@ -88,16 +89,15 @@ form.addEventListener('submit', event => {
   validateDates();
   if (!form.reportValidity()) return;
   const data = new FormData(form);
-  const message = `Hello, I’m interested in Mare Beachfront Apartment in Rabac.\n\nName: ${data.get('name').trim()}\nEmail: ${data.get('email')}\nArrival: ${data.get('arrival')}\nDeparture: ${data.get('departure')}\n\n${data.get('message').trim()}`;
+  const email = data.get('email').trim();
+  const message = `Hello, could you check availability and your best direct rate for Mare Beachfront Apartment?\n\nName: ${data.get('name').trim()}${email ? `\nEmail: ${email}` : ''}\nArrival: ${data.get('arrival')}\nDeparture: ${data.get('departure')}\n\n${data.get('message').trim()}`;
   const status = document.getElementById('form-status');
   status.hidden = false;
-  const draft = document.getElementById('email-draft');
-  if (CONTACT.email) {
-    status.textContent = 'Your inquiry is ready. Open the email draft below to review and send it. Nothing has been sent yet.';
-    draft.href = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Mare apartment — stay inquiry')}&body=${encodeURIComponent(message)}`;
-    draft.hidden = false;
-  } else {
-    status.textContent = `Your inquiry is ready below. Booking contact details are coming soon; this message has not been sent.\n\n${message}`;
-    draft.hidden = true;
-  }
+  const draft = document.getElementById('whatsapp-draft');
+  draft.href = whatsappUrl(message);
+  draft.hidden = false;
+  status.textContent = CONTACT.whatsapp
+    ? 'Review and send your inquiry in WhatsApp.'
+    : 'WhatsApp opens a shareable inquiry. Direct booking will be available once our number is added.';
+  window.open(draft.href, '_blank', 'noopener,noreferrer');
 });
