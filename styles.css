@@ -9,3 +9,10 @@
 .property-address{font-style:normal;font-size:14px;font-weight:550;margin:0 0 20px}.google-map{display:block;width:100%;height:360px;border:0;background:#d9e7e4}.gallery-four{grid-template-columns:1fr 1fr;grid-template-rows:290px 290px}.hero-image{object-position:center 53%}
 @media(max-width:700px){.gallery-four{grid-template-rows:220px 220px}.google-map{height:300px}.hero-image{object-position:60% center}.property-address{font-size:13px}}
 @media(max-width:420px){.gallery-four{grid-template-columns:1fr;grid-template-rows:repeat(4,260px)}}
+
+/* Keep the floating contact control clear of viewport edges and device insets. */
+.whatsapp-float{right:calc(24px + env(safe-area-inset-right,0px));bottom:calc(24px + env(safe-area-inset-bottom,0px));width:56px;height:56px;flex-shrink:0;overflow:visible;z-index:100}
+.whatsapp-float>svg{width:32px;height:32px;overflow:visible}
+.whatsapp-button{gap:14px;white-space:nowrap;min-width:0;max-width:100%}
+.whatsapp-button>svg:first-child{width:25px;height:25px;overflow:visible}
+.hero-details{margin-bottom:28px}
