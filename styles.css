@@ -39,3 +39,91 @@
 .airbnb-logo{color:#ff5a5f;font-weight:650}
 #whatsapp-draft{margin-top:12px}
 @media(max-width:700px){#lightbox{padding:68px 48px}#lightbox .lightbox-prev{left:0}#lightbox .lightbox-next{right:0}#lightbox .lightbox-close{right:10px;top:12px}.platform-logos{gap:22px}.booking-form .button{gap:12px;font-size:11px}}
+
+/* Finishing details: warm stone, deep water, fine brass lines. */
+:root{--brass:#b4a17b;--sea-deep:#173e39}
+html{scrollbar-color:#6d857a #f0eee7;scrollbar-width:thin}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:#f0eee7}
+::-webkit-scrollbar-thumb{background:#6d857a;border:3px solid #f0eee7;border-radius:12px}
+::-webkit-scrollbar-thumb:hover{background:var(--teal)}
+.header{border-bottom:1px solid #b4a17b25}
+.header nav a{transition:color .2s}
+.header nav a:hover{color:var(--ink)}
+.hero{overflow:hidden}
+.hero-image{top:-40px;height:calc(100% + 80px);transform:translate3d(0,var(--drift,0px),0)}
+.hero-shade{background:linear-gradient(90deg,#102d32a6,#102d3226 85%),linear-gradient(0deg,#102d3270,transparent 40%)}
+.hero-details{margin-bottom:12px}
+.hero-tagline{font-family:Georgia,serif;font-size:clamp(19px,2vw,26px);font-style:italic;letter-spacing:.1px;color:#f2ecdf;margin-top:0;margin-bottom:29px;max-width:none}
+.hero-bottom{padding-top:19px;border-top:1px solid #ffffff30}
+.button{border-radius:7px;box-shadow:inset 0 1px 0 #ffffff16;transition:background .25s,transform .25s,box-shadow .25s}
+.button svg{transition:transform .25s}
+.button:hover svg:last-child{transform:translateX(3px)}
+.button-light{box-shadow:0 4px 24px #102d3214;border-color:#ffffff5c}
+.button:active{transform:translateY(0)}
+.highlights-bar{background:linear-gradient(180deg,#f6f4ec,var(--paper));border-bottom:1px solid #b4a17b30}
+.section{padding-top:96px;padding-bottom:96px}
+.eyebrow{display:flex;align-items:center;gap:11px;letter-spacing:2.4px}
+.section .eyebrow:before{content:'';width:23px;height:1px;background:var(--brass);flex-shrink:0}
+.about-copy{max-width:450px}
+.amenities{position:relative;border-top-color:#b4a17b40;padding-top:35px}
+.amenities:before{content:'';position:absolute;left:0;top:-2px;width:42px;height:3px;background:#b4a17b}
+.text-link{transition:gap .25s,border-color .25s;border-bottom-color:#b4a17b88;padding-bottom:7px}
+.text-link:hover{border-bottom-color:var(--teal)}
+.gallery-section{position:relative;background:linear-gradient(145deg,#eeefe6,#f4f2eb)}
+.gallery-section:before,.contact-section:before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#b4a17b66 30%,#b4a17b66 70%,transparent)}
+.section-top:after{content:'01 — 04';font-size:10px;letter-spacing:2px;color:#7d8778;padding-bottom:5px}
+.gallery-item{border-radius:10px;box-shadow:0 6px 24px #1f3b2e0b}
+.gallery-item:after{inset:40% 0 0;background:linear-gradient(transparent,#10251d99)}
+.gallery-item>span{font-size:12px;letter-spacing:.3px}
+.gallery-item b{transition:transform .25s}
+.gallery-item:hover b{transform:translate(2px,-2px)}
+.tide-divider{height:170px;position:relative;isolation:isolate;overflow:hidden;background:var(--sea-deep);display:grid;place-items:center}
+.tide-divider:before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 15% 90%,#7b9a792b,transparent 60%),radial-gradient(ellipse at 85% 0%,#86a69225,transparent 65%)}
+.tide-art{position:absolute;inset:-40px -3%;transform:translate3d(0,var(--drift,0px),0);pointer-events:none}
+.tide-art>svg{width:100%;height:100%;color:#b4c4ad;stroke-width:.7;opacity:.32}
+.tide-emblem{position:relative;width:70px;height:70px;display:grid;place-items:center;background:#173e39de;border:1px solid #bdac8145;border-radius:50%;box-shadow:0 0 0 9px #173e3966}
+.tide-emblem svg{width:43px;height:43px;color:#d4c59f;stroke-width:1.1}
+.location-card{border-color:#b4a17b33;border-radius:12px;box-shadow:0 14px 38px #1f3b2e08}
+.location-caption{padding:21px 23px}
+.property-address{line-height:1.9}
+.contact-section{position:relative;background:radial-gradient(ellipse at 5% 10%,#f3f0e5 0,transparent 65%),#e8ece2}
+.contact{align-items:center}
+.booking-form{border:1px solid #ffffffb3;border-radius:12px;background:#fdfdf8;box-shadow:0 16px 45px #213e3310,inset 0 0 0 1px #b4a17b20;padding:32px}
+.booking-form h3{font-size:19px;font-weight:500;margin-bottom:27px}
+.booking-form label{font-size:11px;color:#53624f}
+.booking-form input,.booking-form textarea{border-radius:6px;background:#fcfdf9;border-color:#dbe0d4;transition:border-color .2s,box-shadow .2s}
+.booking-form input:focus,.booking-form textarea:focus{border-color:#7c9780;box-shadow:0 0 0 3px #214e4709}
+.booking-form .button{min-height:50px}
+.booking-form .button svg{width:25px;height:25px}
+.whatsapp-button{min-height:56px;padding:12px 22px;gap:15px}
+.whatsapp-button>svg:first-child{width:30px;height:30px}
+.whatsapp-float{width:66px;height:66px;background:#20b365;border:1px solid #ffffff80;box-shadow:0 6px 22px #163e3933,0 0 0 5px #faf9f5bb;transition:transform .25s,box-shadow .25s,background .25s}
+.whatsapp-float>svg{width:43px;height:43px}
+.whatsapp-float:hover{background:#149d54;transform:translateY(-3px);box-shadow:0 9px 27px #163e3940,0 0 0 5px #faf9f5dd}
+.whatsapp-float>span{right:79px;border:1px solid #e4e6de;background:var(--paper);font-size:12px;border-radius:6px;padding:9px 15px}
+.footer{position:relative;padding-top:40px;padding-bottom:55px}
+.footer:before{content:'';position:absolute;top:0;left:40px;right:40px;height:1px;background:linear-gradient(90deg,transparent,#b4a17b40,transparent)}
+@media(min-width:701px){.gallery-four{grid-template-columns:1.1fr 1fr;grid-template-rows:310px 310px}}
+@media(max-width:1000px){.section{padding-top:72px;padding-bottom:72px}.booking-form{padding:25px}}
+@media(max-width:700px){
+ .section{padding-top:58px;padding-bottom:58px}
+ .hero-bottom{padding-top:16px}
+ .hero-tagline{font-size:21px;margin-bottom:27px}
+ .section-top{display:flex;align-items:end;gap:15px}
+ .section-top:after{font-size:8px;white-space:nowrap}
+ .gallery-item>span{font-size:11px}
+ .tide-divider{height:120px}
+ .tide-art{inset:-30px -30%}
+ .tide-emblem{width:58px;height:58px}
+ .tide-emblem svg{width:35px;height:35px}
+ .contact{gap:30px}
+ .booking-form{padding:25px 20px}
+ .booking-form h3{font-size:18px}
+ .booking-form .button{font-size:11px}
+ .whatsapp-float{width:62px;height:62px;right:calc(21px + env(safe-area-inset-right,0px));bottom:calc(23px + env(safe-area-inset-bottom,0px))}
+ .whatsapp-float>svg{width:41px;height:41px}
+ .whatsapp-float>span{right:75px}
+ .footer{padding-bottom:110px}
+}
+@media(prefers-reduced-motion:reduce){.hero-image,.tide-art{transform:none!important}.gallery-item:hover img{transform:none}}

@@ -42,6 +42,43 @@ if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: re
   }), { threshold: 0.08 });
   document.querySelectorAll('.reveal').forEach(element => observer.observe(element));
 }
+
+// Small background offsets only; native scrolling stays untouched.
+const ambientMotion = matchMedia('(min-width: 701px) and (prefers-reduced-motion: no-preference)');
+const scenes = [...document.querySelectorAll('.hero, .tide-divider')];
+let stopAmbientMotion = () => {};
+function setupAmbientMotion() {
+  stopAmbientMotion();
+  scenes.forEach(scene => scene.style.removeProperty('--drift'));
+  if (!ambientMotion.matches || !('IntersectionObserver' in window)) return;
+  const visibleScenes = new Set();
+  let frame = 0;
+  const render = () => {
+    frame = 0;
+    visibleScenes.forEach(scene => {
+      const box = scene.getBoundingClientRect();
+      const offset = (innerHeight / 2 - box.top - box.height / 2) * 0.065;
+      scene.style.setProperty('--drift', `${Math.max(-28, Math.min(28, offset)).toFixed(1)}px`);
+    });
+  };
+  const schedule = () => { if (!frame && visibleScenes.size) frame = requestAnimationFrame(render); };
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => entry.isIntersecting ? visibleScenes.add(entry.target) : visibleScenes.delete(entry.target));
+    schedule();
+  });
+  scenes.forEach(scene => observer.observe(scene));
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule);
+  stopAmbientMotion = () => {
+    observer.disconnect();
+    window.removeEventListener('scroll', schedule);
+    window.removeEventListener('resize', schedule);
+    cancelAnimationFrame(frame);
+  };
+}
+ambientMotion.addEventListener('change', setupAmbientMotion);
+setupAmbientMotion();
+
 const lightbox = document.getElementById('lightbox');
 const photos = [...document.querySelectorAll('[data-photo]')];
 let currentPhoto = 0;
