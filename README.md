@@ -10,6 +10,8 @@ Alternatively, open `index.html` directly. Google Maps and Google Fonts require 
 
 ## Before publishing
 
+Cloudflare Workers deployment is configured in `wrangler.jsonc`. Set the dashboard build command to `node build.mjs`, deploy command to `npx wrangler deploy`, and version command to `npx wrangler versions upload`. Keep production branch `main` and root `/`. Commit and push the configuration and build script before triggering a new deployment. The build copies only the website files to `dist`; never use the repository root as the assets directory.
+
 - Set the owner's WhatsApp number (international digits), email and phone in `CONTACT` at the beginning of `script.js`. Also update the HTML fallback contact links for visitors without JavaScript. Until configured, WhatsApp opens its share flow with the requested message; it cannot open an owner-specific chat without the owner's number.
 - The page now uses five supplied apartment photos: terrace hero, kitchen/dining, living room, and both bedrooms. Originals are unchanged. The aerial and bathroom photos remain in assets but are not loaded by the page.
 - Availability buttons open WhatsApp. The form validates dates and opens WhatsApp with the guest's name, dates, optional email and message prefilled. Guests review and send the message themselves. Configure `CONTACT.whatsapp` for direct delivery to the owner; until then, WhatsApp uses a generic share flow. A visible continuation link is provided if a browser blocks the new tab.

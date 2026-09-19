@@ -1,0 +1,11 @@
+.git
+.git/**
+.wrangler
+.wrangler/**
+node_modules
+node_modules/**
+README.md
+compose.yaml
+build.mjs
+wrangler.jsonc
+.gitignore
