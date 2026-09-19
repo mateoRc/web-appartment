@@ -1,140 +1,199 @@
 // Replace these values with the owner's contact details before publishing.
-const CONTACT = { whatsapp: '', email: '', phone: '' };
-const greeting = 'Hello, I’m interested in the beachfront apartment in Rabac';
-const whatsappUrl = message => `https://wa.me/${CONTACT.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
-document.querySelectorAll('[data-whatsapp]').forEach(link => {
+const CONTACT = { whatsapp: "", email: "", phone: "" };
+const greeting = "Hello, I’m interested in the beachfront apartment in Rabac";
+const whatsappUrl = (message) =>
+  `https://wa.me/${CONTACT.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(message)}`;
+document.querySelectorAll("[data-whatsapp]").forEach((link) => {
   link.href = whatsappUrl(greeting);
 });
 if (CONTACT.email) {
-  const email = document.querySelector('[data-email]');
+  const email = document.querySelector("[data-email]");
   email.textContent = CONTACT.email;
   email.href = `mailto:${CONTACT.email}`;
 }
 if (CONTACT.phone) {
-  const phone = document.querySelector('[data-phone]');
-  const link = document.createElement('a');
-  link.href = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
+  const phone = document.querySelector("[data-phone]");
+  const link = document.createElement("a");
+  link.href = `tel:${CONTACT.phone.replace(/[^+\d]/g, "")}`;
   link.textContent = CONTACT.phone;
   phone.replaceWith(link);
 }
-if (CONTACT.whatsapp && CONTACT.email && CONTACT.phone) document.querySelector('.contact-note').hidden = true;
-document.getElementById('year').textContent = new Date().getFullYear();
-const toggle = document.querySelector('.menu-toggle');
-const navigation = document.getElementById('navigation');
+if (CONTACT.whatsapp && CONTACT.email && CONTACT.phone)
+  document.querySelector(".contact-note").hidden = true;
+document.getElementById("year").textContent = new Date().getFullYear();
+const toggle = document.querySelector(".menu-toggle");
+const navigation = document.getElementById("navigation");
 function closeMenu() {
-  toggle.setAttribute('aria-expanded', 'false');
-  toggle.setAttribute('aria-label', 'Open navigation');
-  navigation.classList.remove('open');
+  toggle.setAttribute("aria-expanded", "false");
+  toggle.setAttribute("aria-label", "Open navigation");
+  navigation.classList.remove("open");
 }
-toggle.addEventListener('click', () => {
-  const open = toggle.getAttribute('aria-expanded') !== 'true';
-  toggle.setAttribute('aria-expanded', String(open));
-  toggle.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
-  navigation.classList.toggle('open', open);
+toggle.addEventListener("click", () => {
+  const open = toggle.getAttribute("aria-expanded") !== "true";
+  toggle.setAttribute("aria-expanded", String(open));
+  toggle.setAttribute(
+    "aria-label",
+    open ? "Close navigation" : "Open navigation",
+  );
+  navigation.classList.toggle("open", open);
 });
-navigation.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
-document.addEventListener('keydown', event => { if (event.key === 'Escape') closeMenu(); });
-document.addEventListener('click', event => { if (!event.target.closest('.header')) closeMenu(); });
-if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  document.documentElement.classList.add('motion-ready');
-  const observer = new IntersectionObserver(entries => entries.forEach(entry => {
-    if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
-  }), { threshold: 0.08 });
-  document.querySelectorAll('.reveal').forEach(element => observer.observe(element));
+navigation
+  .querySelectorAll("a")
+  .forEach((link) => link.addEventListener("click", closeMenu));
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeMenu();
+});
+document.addEventListener("click", (event) => {
+  if (!event.target.closest(".header")) closeMenu();
+});
+if (
+  "IntersectionObserver" in window &&
+  !matchMedia("(prefers-reduced-motion: reduce)").matches
+) {
+  document.documentElement.classList.add("motion-ready");
+  const observer = new IntersectionObserver(
+    (entries) =>
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+          observer.unobserve(entry.target);
+        }
+      }),
+    { threshold: 0.08 },
+  );
+  document
+    .querySelectorAll(".reveal")
+    .forEach((element) => observer.observe(element));
 }
 
 // Small background offsets only; native scrolling stays untouched.
-const ambientMotion = matchMedia('(min-width: 701px) and (prefers-reduced-motion: no-preference)');
-const scenes = [...document.querySelectorAll('.hero, .tide-divider')];
+const ambientMotion = matchMedia(
+  "(min-width: 701px) and (prefers-reduced-motion: no-preference)",
+);
+const scenes = [...document.querySelectorAll(".hero, .tide-divider")];
 let stopAmbientMotion = () => {};
 function setupAmbientMotion() {
   stopAmbientMotion();
-  scenes.forEach(scene => scene.style.removeProperty('--drift'));
-  if (!ambientMotion.matches || !('IntersectionObserver' in window)) return;
+  scenes.forEach((scene) => scene.style.removeProperty("--drift"));
+  if (!ambientMotion.matches || !("IntersectionObserver" in window)) return;
   const visibleScenes = new Set();
   let frame = 0;
   const render = () => {
     frame = 0;
-    visibleScenes.forEach(scene => {
+    visibleScenes.forEach((scene) => {
       const box = scene.getBoundingClientRect();
       const offset = (innerHeight / 2 - box.top - box.height / 2) * 0.065;
-      scene.style.setProperty('--drift', `${Math.max(-28, Math.min(28, offset)).toFixed(1)}px`);
+      scene.style.setProperty(
+        "--drift",
+        `${Math.max(-28, Math.min(28, offset)).toFixed(1)}px`,
+      );
     });
   };
-  const schedule = () => { if (!frame && visibleScenes.size) frame = requestAnimationFrame(render); };
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => entry.isIntersecting ? visibleScenes.add(entry.target) : visibleScenes.delete(entry.target));
+  const schedule = () => {
+    if (!frame && visibleScenes.size) frame = requestAnimationFrame(render);
+  };
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) =>
+      entry.isIntersecting
+        ? visibleScenes.add(entry.target)
+        : visibleScenes.delete(entry.target),
+    );
     schedule();
   });
-  scenes.forEach(scene => observer.observe(scene));
-  window.addEventListener('scroll', schedule, { passive: true });
-  window.addEventListener('resize', schedule);
+  scenes.forEach((scene) => observer.observe(scene));
+  window.addEventListener("scroll", schedule, { passive: true });
+  window.addEventListener("resize", schedule);
   stopAmbientMotion = () => {
     observer.disconnect();
-    window.removeEventListener('scroll', schedule);
-    window.removeEventListener('resize', schedule);
+    window.removeEventListener("scroll", schedule);
+    window.removeEventListener("resize", schedule);
     cancelAnimationFrame(frame);
   };
 }
-ambientMotion.addEventListener('change', setupAmbientMotion);
+ambientMotion.addEventListener("change", setupAmbientMotion);
 setupAmbientMotion();
 
-const lightbox = document.getElementById('lightbox');
-const photos = [...document.querySelectorAll('[data-photo]')];
+const lightbox = document.getElementById("lightbox");
+const photos = [...document.querySelectorAll("[data-photo]")];
 let currentPhoto = 0;
-let previousOverflow = '';
+let previousOverflow = "";
 function showPhoto(index) {
   currentPhoto = (index + photos.length) % photos.length;
   const source = photos[currentPhoto];
-  lightbox.querySelector('img').src = source.dataset.photo;
-  lightbox.querySelector('img').alt = source.querySelector('img').alt;
-  lightbox.querySelector('figcaption').textContent = `${currentPhoto + 1} / ${photos.length} — ${source.dataset.caption}`;
+  lightbox.querySelector("img").src = source.dataset.photo;
+  lightbox.querySelector("img").alt = source.querySelector("img").alt;
+  lightbox.querySelector("figcaption").textContent =
+    `${currentPhoto + 1} / ${photos.length} — ${source.dataset.caption}`;
 }
-photos.forEach((button, index) => button.addEventListener('click', () => {
-  showPhoto(index);
-  previousOverflow = document.body.style.overflow;
-  document.body.style.overflow = 'hidden';
-  lightbox.showModal();
-}));
-lightbox.querySelector('.lightbox-close').addEventListener('click', () => lightbox.close());
-lightbox.querySelector('.lightbox-prev').addEventListener('click', () => showPhoto(currentPhoto - 1));
-lightbox.querySelector('.lightbox-next').addEventListener('click', () => showPhoto(currentPhoto + 1));
-lightbox.addEventListener('click', event => { if (event.target === lightbox) lightbox.close(); });
-lightbox.addEventListener('close', () => { document.body.style.overflow = previousOverflow; });
-lightbox.addEventListener('keydown', event => {
-  if (event.key === 'ArrowRight') { event.preventDefault(); showPhoto(currentPhoto + 1); }
-  if (event.key === 'ArrowLeft') { event.preventDefault(); showPhoto(currentPhoto - 1); }
+photos.forEach((button, index) =>
+  button.addEventListener("click", () => {
+    showPhoto(index);
+    previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    lightbox.showModal();
+  }),
+);
+lightbox
+  .querySelector(".lightbox-close")
+  .addEventListener("click", () => lightbox.close());
+lightbox
+  .querySelector(".lightbox-prev")
+  .addEventListener("click", () => showPhoto(currentPhoto - 1));
+lightbox
+  .querySelector(".lightbox-next")
+  .addEventListener("click", () => showPhoto(currentPhoto + 1));
+lightbox.addEventListener("click", (event) => {
+  if (event.target === lightbox) lightbox.close();
 });
-const form = document.getElementById('booking-form');
+lightbox.addEventListener("close", () => {
+  document.body.style.overflow = previousOverflow;
+});
+lightbox.addEventListener("keydown", (event) => {
+  if (event.key === "ArrowRight") {
+    event.preventDefault();
+    showPhoto(currentPhoto + 1);
+  }
+  if (event.key === "ArrowLeft") {
+    event.preventDefault();
+    showPhoto(currentPhoto - 1);
+  }
+});
+const form = document.getElementById("booking-form");
 const arrival = form.elements.arrival;
 const departure = form.elements.departure;
 function localDate(date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 arrival.min = localDate(new Date());
 function validateDates() {
-  const date = arrival.value ? new Date(`${arrival.value}T12:00:00`) : new Date();
+  const date = arrival.value
+    ? new Date(`${arrival.value}T12:00:00`)
+    : new Date();
   date.setDate(date.getDate() + 1);
   departure.min = localDate(date);
-  departure.setCustomValidity(departure.value && arrival.value && departure.value <= arrival.value ? 'Please choose a departure after your arrival.' : '');
+  departure.setCustomValidity(
+    departure.value && arrival.value && departure.value <= arrival.value
+      ? "Please choose a departure after your arrival."
+      : "",
+  );
 }
-arrival.addEventListener('change', validateDates);
-departure.addEventListener('change', validateDates);
+arrival.addEventListener("change", validateDates);
+departure.addEventListener("change", validateDates);
 validateDates();
-form.addEventListener('submit', event => {
+form.addEventListener("submit", (event) => {
   event.preventDefault();
   validateDates();
   if (!form.reportValidity()) return;
   const data = new FormData(form);
-  const email = data.get('email').trim();
-  const message = `Hello, could you check availability and your best direct rate for Mare Beachfront Apartment?\n\nName: ${data.get('name').trim()}${email ? `\nEmail: ${email}` : ''}\nArrival: ${data.get('arrival')}\nDeparture: ${data.get('departure')}\n\n${data.get('message').trim()}`;
-  const status = document.getElementById('form-status');
+  const email = data.get("email").trim();
+  const message = `Hello, could you check availability and your best direct rate for Mare Beachfront Apartment?\n\nName: ${data.get("name").trim()}${email ? `\nEmail: ${email}` : ""}\nArrival: ${data.get("arrival")}\nDeparture: ${data.get("departure")}\n\n${data.get("message").trim()}`;
+  const status = document.getElementById("form-status");
   status.hidden = false;
-  const draft = document.getElementById('whatsapp-draft');
+  const draft = document.getElementById("whatsapp-draft");
   draft.href = whatsappUrl(message);
   draft.hidden = false;
   status.textContent = CONTACT.whatsapp
-    ? 'Review and send your inquiry in WhatsApp.'
-    : 'WhatsApp opens a shareable inquiry. Direct booking will be available once our number is added.';
-  window.open(draft.href, '_blank', 'noopener,noreferrer');
+    ? "Review and send your inquiry in WhatsApp."
+    : "WhatsApp opens a shareable inquiry. Direct booking will be available once our number is added.";
+  window.open(draft.href, "_blank", "noopener,noreferrer");
 });

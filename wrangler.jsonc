@@ -4,13 +4,11 @@
   "compatibility_date": "2026-09-18",
   "workers_dev": false,
   "preview_urls": false,
-  "routes": [
-    { "pattern": "rabac.mateolabs.dev", "custom_domain": true }
-  ],
+  "routes": [{ "pattern": "rabac.mateolabs.dev", "custom_domain": true }],
   "build": {
-    "command": "node build.mjs"
+    "command": "node build.mjs",
   },
   "assets": {
-    "directory": "./dist"
-  }
+    "directory": "./dist",
+  },
 }
