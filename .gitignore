@@ -3,6 +3,7 @@ dist/
 node_modules/
 .dev.vars*
 .env*
+.private/
 .chrome-check/
 .gallery-chrome
 .header-chrome

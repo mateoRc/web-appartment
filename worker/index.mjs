@@ -13,7 +13,11 @@ const json = (data, status = 200, cache = "no-store") => new Response(JSON.strin
 
 export async function availability(request, env, ctx, services = {}) {
   if (request.method !== "GET") return new Response(null, { status: 405, headers: { Allow: "GET" } });
+  let reason = "missing_feed_secret";
+  let upstreamStatus;
   try {
+    if (!env.BOOKING_ICAL_URL?.trim()) throw new Error("Missing source");
+    reason = "invalid_feed_url";
     const feed = new URL(env.BOOKING_ICAL_URL);
     if (feed.protocol !== "https:" || feed.username || feed.password || feed.port ||
         !(feed.hostname === "booking.com" || feed.hostname.endsWith(".booking.com"))) {
@@ -24,14 +28,20 @@ export async function availability(request, env, ctx, services = {}) {
     const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(feed.href));
     const hash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
     const key = new Request(`${new URL(request.url).origin}/api/availability?source=${hash}`);
-    const cached = await cache?.match(key);
+    // Cache failures should not prevent us from reading the actual calendar.
+    const cached = await cache?.match(key).catch(() => undefined);
     if (cached) return cached;
+    reason = "feed_request_failed";
     const upstream = await (services.fetch ?? fetch)(feed.href, {
       headers: { Accept: "text/calendar" },
       redirect: "error",
       signal: AbortSignal.timeout(8000),
     });
-    if (!upstream.ok || !upstream.body) throw new Error("Calendar unavailable");
+    if (!upstream.ok || !upstream.body) {
+      reason = "feed_http_error";
+      upstreamStatus = upstream.status;
+      throw new Error("Calendar unavailable");
+    }
     const reader = upstream.body.getReader();
     const decoder = new TextDecoder();
     let bytes = 0;
@@ -40,11 +50,21 @@ export async function availability(request, env, ctx, services = {}) {
       const { done, value } = await reader.read();
       if (done) break;
       bytes += value.byteLength;
-      if (bytes > MAX_BYTES) { await reader.cancel(); throw new Error("Calendar too large"); }
+      if (bytes > MAX_BYTES) { reason = "feed_too_large"; await reader.cancel(); throw new Error("Calendar too large"); }
       text += decoder.decode(value, { stream: true });
     }
     text += decoder.decode();
-    const blocked = parseCalendar(text);
+    reason = "invalid_calendar";
+    let blocked;
+    try {
+      blocked = parseCalendar(text);
+    } catch (error) {
+      // These are fixed parser messages, never arbitrary upstream content.
+      if (error.message === "Unsupported date") reason = "unsupported_date_format";
+      else if (error.message === "Unsupported event") reason = "unsupported_recurring_event";
+      else if (error.message === "Invalid date" || error.message === "Invalid interval") reason = "invalid_calendar_dates";
+      throw error;
+    }
     // Never expose feed URLs, event titles, reservation IDs or guest details.
     const response = json({ blocked, fetchedAt: new Date().toISOString() }, 200,
       `public, max-age=0, s-maxage=${CACHE_SECONDS}`);
@@ -52,7 +72,7 @@ export async function availability(request, env, ctx, services = {}) {
     return response;
   } catch {
     // Never log the upstream exception: it could contain the private feed URL.
-    return json({ error: "availability_unavailable" }, 503);
+    return json({ error: "availability_unavailable", reason, ...(upstreamStatus ? { upstreamStatus } : {}) }, 503);
   }
 }
 

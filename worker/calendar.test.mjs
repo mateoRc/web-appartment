@@ -49,7 +49,10 @@ test("missing secrets, wrong hosts, upstream failures and invalid payloads stay 
     const response = await availability(request, env, ctx, { fetch: fetcher });
     assert.equal(response.status, 503);
     assert.equal(response.headers.get("Cache-Control"), "no-store");
-    assert.deepEqual(await response.json(), { error: "availability_unavailable" });
+    const body = await response.json();
+    assert.equal(body.error, "availability_unavailable");
+    assert.ok(body.reason);
+    assert.ok(!JSON.stringify(body).includes("private-token"));
   }
 });
 test("cache reuse avoids upstream fetches and secret changes invalidate cached dates", async () => {
@@ -67,4 +70,19 @@ test("cache reuse avoids upstream fetches and secret changes invalidate cached d
 });
 test("API refuses writes", async () => {
   assert.equal((await availability(new Request(request.url, { method: "POST" }), env, ctx)).status, 405);
+});
+test("safe diagnostics distinguish configuration, HTTP and date-format failures", async () => {
+  const missing = await availability(request, {}, ctx);
+  assert.equal((await missing.json()).reason, "missing_feed_secret");
+  const denied = await availability(request, env, ctx, { fetch: async () => new Response("private content", { status: 403 }) });
+  assert.deepEqual(await denied.json(), { error: "availability_unavailable", reason: "feed_http_error", upstreamStatus: 403 });
+  const timed = await availability(request, env, ctx, { fetch: async () => new Response(calendar(event("20300610T000000Z", "20300613T000000Z"))) });
+  assert.equal((await timed.json()).reason, "unsupported_date_format");
+});
+test("cache lookup failure falls back to the live feed", async () => {
+  const response = await availability(request, env, ctx, {
+    fetch: async () => new Response(feed),
+    cache: { match: async () => { throw Error("cache down"); }, put: async () => {} },
+  });
+  assert.equal(response.status, 200);
 });
