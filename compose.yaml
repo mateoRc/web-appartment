@@ -8,6 +8,7 @@ services:
       - ./index.html:/usr/share/nginx/html/index.html:ro
       - ./styles.css:/usr/share/nginx/html/styles.css:ro
       - ./script.js:/usr/share/nginx/html/script.js:ro
+      - ./locales.js:/usr/share/nginx/html/locales.js:ro
       - ./assets:/usr/share/nginx/html/assets:ro
       - ./historical:/usr/share/nginx/html/historical:ro
     restart: unless-stopped

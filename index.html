@@ -23,6 +23,7 @@
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23173f3c'/%3E%3Ctext x='10' y='46' font-family='Georgia' font-size='48' fill='%23fff'%3Em%3C/text%3E%3C/svg%3E"
     />
     <link rel="stylesheet" href="styles.css" />
+    <script src="locales.js" defer></script>
     <script src="script.js" defer></script>
   </head>
   <body>
@@ -94,6 +95,11 @@
       <nav aria-label="Main navigation" id="navigation">
         <a href="#about">The apartment</a><a href="#gallery">Gallery</a
         ><a href="#location">Location</a><a href="#contact">Contact</a>
+        <div class="language-picker" role="group" aria-label="Language" hidden>
+          <button type="button" data-locale="en" lang="en" aria-label="English" aria-pressed="true">EN</button>
+          <button type="button" data-locale="de" lang="de" aria-label="Deutsch" aria-pressed="false">DE</button>
+          <button type="button" data-locale="it" lang="it" aria-label="Italiano" aria-pressed="false">IT</button>
+        </div>
       </nav>
       <a
         class="button header-book"
@@ -204,7 +210,7 @@
       </section>
       <section class="gallery-section" id="gallery">
         <div class="section">
-          <div class="section-top reveal">
+          <div class="section-top reveal" data-photo-count="6 PHOTOS">
             <div>
               <p class="eyebrow">GALLERY</p>
               <h2>The <em>apartment.</em></h2>
@@ -292,9 +298,6 @@
           <div class="heritage-archive">
             <figure class="heritage-photo">
               <img src="assets/historical_1-upscaled-2x.png" alt="Historic panorama of Rabac, with waterfront houses below the hillside and sailing boats in the harbour" width="767" height="478" loading="lazy" decoding="async" />
-            </figure>
-            <figure class="heritage-photo">
-              <img src="assets/historical_2-upscaled-2x.png" alt="Historic view of boats moored beside the stone waterfront and houses in Rabac" width="759" height="460" loading="lazy" decoding="async" />
             </figure>
           </div>
         </div>

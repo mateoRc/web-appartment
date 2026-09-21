@@ -1655,7 +1655,7 @@ html {
   );
 }
 .section-top:after {
-  content: "6 PHOTOS";
+  content: attr(data-photo-count);
   font-size: 10px;
   letter-spacing: 2px;
   color: #7d8778;
@@ -1769,11 +1769,17 @@ html {
 .heritage-archive {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: center;
-  gap: 24px;
-  padding-top: 24px;
-  border-top: 1px solid #b4a17b40;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  padding: 8px 0 16px;
+}
+.heritage-archive .heritage-photo {
+  width: 92%;
+  max-width: 480px;
+  padding: 6px 6px 16px;
+  background: #f8f5eb;
+  box-shadow: 0 6px 18px #403b2921, 0 1px 3px #403b2914;
+  transform: rotate(-2deg);
 }
 .heritage-photo img {
   width: 100%;
@@ -1796,31 +1802,13 @@ html {
 }
 @media (max-width: 700px) {
   .heritage-archive {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0;
     width: calc(100% + 16px);
     max-width: 520px;
     justify-self: center;
     padding: 12px 0 14px;
-    border-top: 0;
-    isolation: isolate;
   }
   .heritage-archive .heritage-photo {
-    width: 92%;
     padding: 5px 5px 12px;
-    background: #f8f5eb;
-    box-shadow: 0 6px 18px #403b2921, 0 1px 3px #403b2914;
-  }
-  .heritage-archive .heritage-photo:first-child {
-    justify-self: start;
-    transform: rotate(-2deg);
-  }
-  .heritage-archive .heritage-photo:last-child {
-    justify-self: end;
-    margin-top: -12px;
-    transform: rotate(2deg);
-    position: relative;
-    z-index: 1;
   }
   .heritage-inner {
     grid-template-columns: 1fr;
@@ -2077,5 +2065,124 @@ html {
   }
   .gallery-item:hover img {
     transform: none;
+  }
+}
+
+/* Compact language controls stay inside the navigation on every viewport. */
+.header nav {
+  align-items: center;
+  gap: 22px;
+  margin-right: 24px;
+}
+.language-picker:not([hidden]) {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-left: 16px;
+  border-left: 1px solid var(--line);
+}
+.language-picker button {
+  width: 38px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 22px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: .5px;
+}
+.language-picker button:hover {
+  background: #e7e9df;
+}
+.language-picker button[aria-pressed="true"] {
+  background: var(--teal);
+  color: var(--paper);
+}
+@media (max-width: 1100px) {
+  .header nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--paper);
+    padding: 12px 24px 20px;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    margin: 0;
+    max-height: calc(100svh - 92px);
+    overflow-y: auto;
+    box-shadow: 0 10px 20px #173f3c12;
+  }
+  .header nav.open {
+    display: flex;
+  }
+  .header nav a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 6px;
+    font-size: 14px;
+  }
+  .header-book {
+    margin-left: auto;
+  }
+  .menu-toggle {
+    display: flex;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding: 4px;
+    border: 0;
+    background: transparent;
+  }
+  .menu-toggle span {
+    width: 22px;
+    height: 1px;
+    background: var(--ink);
+  }
+  .menu-toggle[aria-expanded="true"] span:first-child {
+    transform: translateY(3.5px) rotate(45deg);
+  }
+  .menu-toggle[aria-expanded="true"] span:last-child {
+    transform: translateY(-3.5px) rotate(-45deg);
+  }
+  .language-picker:not([hidden]) {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    margin-top: 10px;
+    padding: 14px 0 0;
+    gap: 10px;
+  }
+  .language-picker button {
+    width: 44px;
+  }
+}
+@media (max-width: 420px) {
+  .header {
+    padding-inline: 16px;
+    gap: 10px;
+  }
+  .header .brand span {
+    font-size: 6px;
+    letter-spacing: .7px;
+  }
+  .header-book {
+    padding-inline: 10px;
+    gap: 8px;
+  }
+  .hero h1 {
+    font-size: clamp(29px, 8.2vw, 34px);
+    overflow-wrap: anywhere;
+  }
+  .hero-details {
+    max-width: 270px;
+    line-height: 1.9;
   }
 }

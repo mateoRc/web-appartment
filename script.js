@@ -1,4 +1,5 @@
 // Owner contact details. Keep the HTML fallback links in sync when updating.
+const t = (key) => window.MareLocale.t(key);
 const CONTACT = {
   whatsapp: "385981700612",
   email: "marizahm305@gmail.com",
@@ -36,7 +37,7 @@ const toggle = document.querySelector(".menu-toggle");
 const navigation = document.getElementById("navigation");
 function closeMenu() {
   toggle.setAttribute("aria-expanded", "false");
-  toggle.setAttribute("aria-label", "Open navigation");
+  toggle.setAttribute("aria-label", t("Open navigation"));
   navigation.classList.remove("open");
 }
 toggle.addEventListener("click", () => {
@@ -44,7 +45,7 @@ toggle.addEventListener("click", () => {
   toggle.setAttribute("aria-expanded", String(open));
   toggle.setAttribute(
     "aria-label",
-    open ? "Close navigation" : "Open navigation",
+    t(open ? "Close navigation" : "Open navigation"),
   );
   navigation.classList.toggle("open", open);
 });
@@ -212,27 +213,41 @@ function validateDates() {
   departure.min = localDate(date);
   departure.setCustomValidity(
     departure.value && arrival.value && departure.value <= arrival.value
-      ? "Please choose a departure after your arrival."
+      ? t("Please choose a departure after your arrival.")
       : "",
   );
 }
 arrival.addEventListener("change", validateDates);
 departure.addEventListener("change", validateDates);
 validateDates();
+function inquiryMessage() {
+  const data = new FormData(form);
+  const email = data.get("email").trim();
+  return `${t("Hello, could you check availability and your best direct rate for Mare Beachfront Apartment?")}\n\n${t("Name")}: ${data.get("name").trim()}${email ? `\n${t("Email")}: ${email}` : ""}\n${t("Arrival")}: ${data.get("arrival")}\n${t("Departure")}: ${data.get("departure")}\n\n${data.get("message").trim()}`;
+}
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   validateDates();
   if (!form.reportValidity()) return;
-  const data = new FormData(form);
-  const email = data.get("email").trim();
-  const message = `Hello, could you check availability and your best direct rate for Mare Beachfront Apartment?\n\nName: ${data.get("name").trim()}${email ? `\nEmail: ${email}` : ""}\nArrival: ${data.get("arrival")}\nDeparture: ${data.get("departure")}\n\n${data.get("message").trim()}`;
+  const message = inquiryMessage();
   const status = document.getElementById("form-status");
   status.hidden = false;
   const draft = document.getElementById("whatsapp-draft");
   draft.href = whatsappUrl(message);
   draft.hidden = false;
-  status.textContent = CONTACT.whatsapp
-    ? "Review and send your inquiry in WhatsApp."
-    : "WhatsApp opens a shareable inquiry. Direct booking will be available once our number is added.";
+  status.textContent = t("Review and send your inquiry in WhatsApp.");
   window.open(draft.href, "_blank", "noopener,noreferrer");
+});
+window.MareLocale.init(() => {
+  document.querySelectorAll("[data-whatsapp]").forEach((link) => {
+    link.href = whatsappUrl(t(greeting));
+  });
+  toggle.setAttribute("aria-label", t(toggle.getAttribute("aria-expanded") === "true" ? "Close navigation" : "Open navigation"));
+  validateDates();
+  if (lightbox.open) showPhoto(currentPhoto);
+  const draft = document.getElementById("whatsapp-draft");
+  if (!draft.hidden) {
+    draft.href = whatsappUrl(inquiryMessage());
+    document.getElementById("form-status").textContent = t("Review and send your inquiry in WhatsApp.");
+  }
 });
