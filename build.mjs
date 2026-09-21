@@ -11,6 +11,7 @@ const files = [
   "styles.css",
   "script.js",
   "locales.js",
+  "calendar.js",
   "assets/terrace.jpg",
   "assets/from_the_beach-upscaled-2x.png",
   "assets/hallway_1.jpg",

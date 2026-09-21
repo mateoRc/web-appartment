@@ -1,6 +1,6 @@
 # Mare Beachfront Apartment
 
-A responsive static single-page website at Obala Maršala Tita 29, 52221 Rabac, Croatia. No build step or JavaScript dependencies.
+A responsive static single-page website at Obala Maršala Tita 29, 52221 Rabac, Croatia, with a small Cloudflare Worker for the optional availability calendar. No JavaScript dependencies.
 
 ## Run locally in Docker
 
@@ -34,3 +34,20 @@ The finish includes a matching native scrollbar, fine accent lines and a compact
 English, German, Italian and French are available through the EN / DE / IT / FR buttons at the bottom of the mobile navigation and beside desktop navigation links. Switching updates the current page without a reload and preserves form entries. On first visit, the first supported browser language is selected, including regional variants such as de-AT or fr-CA. A saved manual selection takes priority. English is the fallback when no browser language is supported or JavaScript is unavailable.
 
 `locales.js` contains the German, Italian and French translations, keyed by English source text. When changing English copy, update its translation key too. Translations include photo captions, accessibility labels, metadata, date validation and WhatsApp inquiry drafts. Native date pickers and standard browser validation follow the guest's browser settings. The build and Docker configuration include the locale script.
+
+## Booking.com availability calendar
+
+The enquiry form includes a collapsed, read-only calendar covering the current month and the following eleven months. Opening it fetches `/api/availability`. Only this API route runs the Worker first; normal files use static asset serving. It uses the Workers Cache API and no paid database, KV binding or scheduled job. Confirm that the account uses **Workers Free** before deployment; account-wide limits still apply.
+
+### Connect the private feed
+
+1. Deploy the updated repository through the existing Cloudflare build pipeline (`node build.mjs`, then `npx wrangler deploy`). Include `worker/`, `calendar.js` and the updated `wrangler.jsonc`. The Worker entry point is `worker/index.mjs`; it is bundled separately and is never copied into `dist`. This must happen first: Cloudflare does not allow secrets on a static-assets-only deployment. Until the secret is added, the calendar safely shows unavailable.
+2. After deployment succeeds, open Cloudflare **Workers & Pages → rabac-appartment → Settings → Variables and Secrets → Add**. Refresh the dashboard if necessary.
+3. Choose **Secret**. Set the name to `BOOKING_ICAL_URL` and the value to the apartment's Booking.com iCal export URL. Select **Deploy** to save it. Never put the URL in HTML, JavaScript, Git or a public issue.
+4. Open the public site's enquiry form and expand **View availability calendar**. Compare several actual reservations and checkout dates against the Booking.com host calendar before relying on it.
+
+The API accepts HTTPS Booking.com export URLs and returns only merged start/end date ranges and a fetch timestamp. The last date of an iCal event is checkout and is not an occupied night unless another block starts that day. Cancelled and transparent events are ignored. The parser accepts all-day `DTSTART`/`DTEND` events; malformed, recurring or timed events fail safely rather than showing false availability. If the real feed has another format, adapt the parser against a redacted sample before enabling it.
+
+Successful responses are cached for five minutes per Cloudflare location and refreshed on demand, not by a global scheduled poll. Booking.com itself may update its export later. The browser discards data over ten minutes old. Fetch failures, missing configuration and unsupported feeds show an unavailable message with a retry button. An unblocked date is labelled **No block shown**, not guaranteed available; reservations from other channels are visible only if reflected in the source feed. The enquiry form always remains usable.
+
+Run `node --test worker/calendar.test.mjs` for parser, privacy, error and caching checks. For a full local preview use `npx wrangler dev` with a supported Node.js version and a private `.dev.vars` file containing `BOOKING_ICAL_URL`; `.dev.vars*` and `.env*` are ignored by Git. The plain Docker/static-file preview has no calendar API and therefore shows the unavailable state. Do not use a real feed in browser-side test fixtures.

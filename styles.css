@@ -688,6 +688,107 @@ h2 em {
   grid-template-columns: 1fr 1fr;
   gap: 15px;
 }
+.availability-calendar {
+  margin: -8px 0 24px;
+  border-block: 1px solid var(--line);
+  padding: 12px 0;
+}
+.availability-calendar summary {
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--teal);
+  padding: 5px 0;
+}
+.availability-calendar summary:focus-visible {
+  outline: 3px solid #b49d67;
+  outline-offset: 4px;
+}
+.calendar-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+}
+.calendar-toolbar strong {
+  font-size: 13px;
+  font-weight: 500;
+}
+.calendar-toolbar button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: transparent;
+}
+.calendar-toolbar button:disabled {
+  opacity: .35;
+  cursor: default;
+}
+#calendar-status, .calendar-note {
+  font-size: 11px;
+  color: #616b60;
+  margin: 12px 0;
+  line-height: 1.6;
+}
+#calendar-retry {
+  min-height: 44px;
+  border: 0;
+  border-bottom: 1px solid var(--brass);
+  padding: 4px 0;
+  background: transparent;
+  font-size: 12px;
+}
+.calendar-table {
+  width: 100%;
+  table-layout: fixed;
+  border-spacing: 3px;
+  font-size: 12px;
+  text-align: center;
+}
+.calendar-table th {
+  font-size: 10px;
+  font-weight: 400;
+  height: 28px;
+}
+.calendar-table td {
+  height: 32px;
+  border-radius: 4px;
+}
+.calendar-unblocked {
+  background: #f1f3eb;
+}
+.calendar-blocked {
+  background: #e4d9ce;
+  text-decoration: line-through;
+  color: #786453;
+}
+.calendar-past {
+  color: #9b9e96;
+}
+.calendar-table [aria-current="date"] {
+  box-shadow: inset 0 0 0 1px var(--teal);
+}
+.calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 10px;
+  margin-top: 12px;
+}
+.calendar-legend span::before {
+  content: "";
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  background: #f1f3eb;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  margin-right: 5px;
+}
+.calendar-legend .calendar-legend-blocked::before {
+  background: #e4d9ce;
+}
 .booking-form label {
   display: block;
   font-size: 10px;

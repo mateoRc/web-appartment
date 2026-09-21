@@ -2,6 +2,17 @@
 // Bind individual text nodes so switching languages preserves icons, inputs and listeners.
 window.MareLocale = (() => {
   const translations = {
+    "View availability calendar": ["Belegungskalender ansehen", "Vedi il calendario", "Voir le calendrier"],
+    "Previous month": ["Vorheriger Monat", "Mese precedente", "Mois précédent"],
+    "Next month": ["Nächster Monat", "Mese successivo", "Mois suivant"],
+    "Try again": ["Erneut versuchen", "Riprova", "Réessayer"],
+    "Unavailable": ["Nicht verfügbar", "Non disponibile", "Indisponible"],
+    "No block shown": ["Keine Sperre vermerkt", "Nessun blocco indicato", "Aucun blocage indiqué"],
+    "Past date": ["Vergangenes Datum", "Data passata", "Date passée"],
+    "Last checked": ["Zuletzt geprüft", "Ultimo controllo", "Dernière vérification"],
+    "Loading calendar…": ["Kalender wird geladen…", "Caricamento del calendario…", "Chargement du calendrier…"],
+    "Calendar unavailable. Please ask us about your dates.": ["Kalender nicht verfügbar. Fragen Sie uns nach Ihren Reisedaten.", "Calendario non disponibile. Contattaci per le tue date.", "Calendrier indisponible. Contactez-nous pour vos dates."],
+    "Indicative calendar from Booking.com. Updates may be delayed; please confirm your dates with us.": ["Unverbindlicher Kalender von Booking.com. Aktualisierungen können verzögert sein; bitte bestätigen Sie Ihre Reisedaten mit uns.", "Calendario indicativo da Booking.com. Gli aggiornamenti possono subire ritardi; conferma le date con noi.", "Calendrier indicatif de Booking.com. Les mises à jour peuvent être différées ; veuillez confirmer vos dates avec nous."],
     "Skip to content": ["Zum Inhalt", "Vai al contenuto", "Aller au contenu"],
     "Mare Beachfront Apartment home": ["Mare – Startseite", "Mare – pagina iniziale", "Mare – accueil"],
     "Main navigation": ["Hauptnavigation", "Navigazione principale", "Navigation principale"],

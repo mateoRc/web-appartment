@@ -239,6 +239,7 @@ form.addEventListener("submit", (event) => {
   window.open(draft.href, "_blank", "noopener,noreferrer");
 });
 window.MareLocale.init(() => {
+  window.MareCalendar.render();
   document.querySelectorAll("[data-whatsapp]").forEach((link) => {
     link.href = whatsappUrl(t(greeting));
   });

@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "rabac-appartment",
+  "main": "worker/index.mjs",
   "compatibility_date": "2026-09-18",
   "workers_dev": false,
   "preview_urls": false,
@@ -10,5 +11,7 @@
   },
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"],
   },
 }

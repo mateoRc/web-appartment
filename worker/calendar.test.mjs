@@ -1,0 +1,70 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { webcrypto } from "node:crypto";
+import { parseCalendar } from "./ical.mjs";
+import { availability } from "./index.mjs";
+
+globalThis.crypto ??= webcrypto;
+const calendar = (...events) => `BEGIN:VCALENDAR\r\nVERSION:2.0\r\n${events.join("\r\n")}\r\nEND:VCALENDAR`;
+const event = (start, end, extra = "") => `BEGIN:VEVENT\r\nDTSTART;VALUE=DATE:${start}\r\nDTEND;VALUE=DATE:${end}\r\n${extra}\r\nEND:VEVENT`;
+const feed = calendar(event("20300610", "20300613", "SUMMARY:Guest private name\r\nUID:private-reservation"));
+const request = new Request("https://example.com/api/availability");
+const env = { BOOKING_ICAL_URL: "https://ical.booking.com/v1/export?t=private-token" };
+const ctx = { waitUntil: () => {} };
+
+test("checkout is exclusive, overlapping/adjacent blocks merge and private data is stripped", () => {
+  assert.deepEqual(parseCalendar(calendar(
+    event("20300612", "20300615"), event("20300610", "20300613", "SUMMARY:Private\r\n details"),
+    event("20300615", "20300616"), event("20300701", "20300702"),
+  )), [{ start: "2030-06-10", end: "2030-06-16" }, { start: "2030-07-01", end: "2030-07-02" }]);
+});
+test("cancelled and transparent events do not block nights", () => {
+  assert.deepEqual(parseCalendar(calendar(event("20300610", "20300613", "STATUS:CANCELLED"),
+    event("20300610", "20300613", "TRANSP:TRANSPARENT"))), []);
+  assert.deepEqual(parseCalendar(calendar()), []);
+});
+test("malformed dates, recurrence, timed events and incomplete feeds fail closed", () => {
+  for (const source of ["<html>Login</html>", calendar(event("20300230", "20300302")),
+    calendar(event("20300610", "20300609")), calendar(event("20300610", "20300613", "RRULE:FREQ=YEARLY")),
+    calendar(event("20300610T120000Z", "20300613T120000Z")), "BEGIN:VCALENDAR\nBEGIN:VEVENT\nEND:VCALENDAR",
+    calendar("END:VEVENT"), calendar("BEGIN:VEVENT\nDTSTART;VALUE=DATE:20300610\nEND:VEVENT")]) {
+    assert.throws(() => parseCalendar(source));
+  }
+});
+test("API exposes only date ranges and fetch timestamp", async () => {
+  const response = await availability(request, env, ctx, { fetch: async () => new Response(feed) });
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.deepEqual(Object.keys(body).sort(), ["blocked", "fetchedAt"]);
+  assert.deepEqual(body.blocked, [{ start: "2030-06-10", end: "2030-06-13" }]);
+  assert.ok(!JSON.stringify(body).includes("private"));
+});
+test("missing secrets, wrong hosts, upstream failures and invalid payloads stay unavailable", async () => {
+  for (const url of [undefined, "http://ical.booking.com/a", "https://booking.com.evil.example/a"]) {
+    const response = await availability(request, { BOOKING_ICAL_URL: url }, ctx, { fetch: () => { throw Error("must not fetch"); } });
+    assert.equal(response.status, 503);
+  }
+  for (const fetcher of [async () => new Response("no", { status: 500 }), async () => new Response("bad"),
+    async () => new Response("x".repeat(512 * 1024 + 1)), async () => { throw Error(env.BOOKING_ICAL_URL); }]) {
+    const response = await availability(request, env, ctx, { fetch: fetcher });
+    assert.equal(response.status, 503);
+    assert.equal(response.headers.get("Cache-Control"), "no-store");
+    assert.deepEqual(await response.json(), { error: "availability_unavailable" });
+  }
+});
+test("cache reuse avoids upstream fetches and secret changes invalidate cached dates", async () => {
+  const values = new Map();
+  let calls = 0;
+  const services = {
+    fetch: async () => { calls++; return new Response(feed); },
+    cache: { match: async (key) => values.get(key.url)?.clone(), put: async (key, value) => { values.set(key.url, value); } },
+  };
+  await availability(request, env, ctx, services);
+  await availability(new Request(`${request.url}?random=1`), env, ctx, services);
+  assert.equal(calls, 1);
+  await availability(request, { BOOKING_ICAL_URL: `${env.BOOKING_ICAL_URL}2` }, ctx, services);
+  assert.equal(calls, 2);
+});
+test("API refuses writes", async () => {
+  assert.equal((await availability(new Request(request.url, { method: "POST" }), env, ctx)).status, 405);
+});

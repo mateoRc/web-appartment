@@ -24,6 +24,7 @@
     />
     <link rel="stylesheet" href="styles.css" />
     <script src="locales.js" defer></script>
+    <script src="calendar.js" defer></script>
     <script src="script.js" defer></script>
   </head>
   <body>
@@ -399,6 +400,27 @@
           </div>
           <form id="booking-form" class="booking-form reveal">
             <h3>Check availability</h3>
+            <details class="availability-calendar" id="availability-calendar" hidden>
+              <summary>View availability calendar</summary>
+              <div class="calendar-toolbar">
+                <button type="button" id="calendar-prev" aria-label="Previous month">←</button>
+                <strong id="calendar-month" aria-live="polite"></strong>
+                <button type="button" id="calendar-next" aria-label="Next month">→</button>
+              </div>
+              <p id="calendar-status" role="status"></p>
+              <button type="button" id="calendar-retry" hidden>Try again</button>
+              <div id="calendar-content" hidden>
+                <table class="calendar-table" aria-labelledby="calendar-month">
+                  <thead id="calendar-weekdays"></thead>
+                  <tbody id="calendar-days"></tbody>
+                </table>
+                <div class="calendar-legend">
+                  <span class="calendar-legend-blocked">Unavailable</span>
+                  <span>No block shown</span>
+                </div>
+                <p class="calendar-note">Indicative calendar from Booking.com. Updates may be delayed; please confirm your dates with us.</p>
+              </div>
+            </details>
             <div class="form-row">
               <label
                 >Your name<input
