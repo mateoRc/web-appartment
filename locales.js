@@ -151,9 +151,16 @@ window.MareLocale = (() => {
     document.querySelectorAll("[data-locale]").forEach((button) => {
       button.addEventListener("click", () => setLocale(button.dataset.locale));
     });
-    let saved = "en";
-    try { saved = localStorage.getItem("mare-locale") || "en"; } catch { /* English fallback. */ }
-    setLocale(supportedLocales.includes(saved) ? saved : "en", false);
+    let saved;
+    try { saved = localStorage.getItem("mare-locale"); } catch { /* Use browser preferences when storage is unavailable. */ }
+    const preferredLanguages = navigator.languages?.length
+      ? navigator.languages
+      : [navigator.language || "en"];
+    const detected = preferredLanguages
+      .map((language) => language.toLowerCase().split(/[-_]/)[0])
+      .find((language) => supportedLocales.includes(language)) || "en";
+    // Only manual selections are saved; automatic detection follows browser preferences.
+    setLocale(supportedLocales.includes(saved) ? saved : detected, false);
     document.querySelector(".language-picker").hidden = false;
   }
   return { t, init };

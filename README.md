@@ -31,6 +31,6 @@ The finish includes a matching native scrollbar, fine accent lines and a compact
 
 ## Languages
 
-English, German, Italian and French are available through the EN / DE / IT / FR buttons at the bottom of the mobile navigation and beside desktop navigation links. Switching updates the current page without a reload and preserves form entries. The preference is stored locally; English remains the default and no-JavaScript fallback.
+English, German, Italian and French are available through the EN / DE / IT / FR buttons at the bottom of the mobile navigation and beside desktop navigation links. Switching updates the current page without a reload and preserves form entries. On first visit, the first supported browser language is selected, including regional variants such as de-AT or fr-CA. A saved manual selection takes priority. English is the fallback when no browser language is supported or JavaScript is unavailable.
 
 `locales.js` contains the German, Italian and French translations, keyed by English source text. When changing English copy, update its translation key too. Translations include photo captions, accessibility labels, metadata, date validation and WhatsApp inquiry drafts. Native date pickers and standard browser validation follow the guest's browser settings. The build and Docker configuration include the locale script.
