@@ -2,6 +2,8 @@
 // Bind individual text nodes so switching languages preserves icons, inputs and listeners.
 window.MareLocale = (() => {
   const translations = {
+    "SOON": ["BALD", "PRESTO", "BIENTÔT"],
+    "Airbnb — coming soon": ["Airbnb – demnächst verfügbar", "Airbnb – prossimamente", "Airbnb – bientôt disponible"],
     "View availability calendar": ["Belegungskalender ansehen", "Vedi il calendario", "Voir le calendrier"],
     "Previous month": ["Vorheriger Monat", "Mese precedente", "Mois précédent"],
     "Next month": ["Nächster Monat", "Mese successivo", "Mois suivant"],
