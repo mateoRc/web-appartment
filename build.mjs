@@ -4,7 +4,6 @@ import { fileURLToPath } from "node:url";
 const root = new URL("./", import.meta.url);
 const output = new URL("./dist/", root);
 await mkdir(new URL("assets/", output), { recursive: true });
-await mkdir(new URL("historical/", output), { recursive: true });
 
 // Publish only the files used by the website, never the repository directory.
 const files = [
@@ -14,9 +13,9 @@ const files = [
   "assets/terrace.jpg",
   "assets/from_the_beach-upscaled-2x.png",
   "assets/hallway_1.jpg",
-  "historical/separator-historical-upscaled-2x.png",
-  "historical/historical_1-upscaled-2x.png",
-  "historical/historical_2-upscaled-2x.png",
+  "assets/separator-historical-upscaled-2x.png",
+  "assets/historical_1-upscaled-2x.png",
+  "assets/historical_2-upscaled-2x.png",
   "assets/details.jpg",
   "assets/living.jpg",
   "assets/bedroom.jpg",

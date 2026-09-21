@@ -117,6 +117,34 @@ setupAmbientMotion();
 
 const lightbox = document.getElementById("lightbox");
 const photos = [...document.querySelectorAll("[data-photo]")];
+const galleryTrack = document.getElementById("apartment-photos");
+const galleryNavigation = document.querySelector(".gallery-navigation");
+const galleryBack = galleryNavigation.querySelector(".gallery-back");
+const galleryForward = galleryNavigation.querySelector(".gallery-forward");
+let galleryIndex = 0;
+function updateGalleryPosition() {
+  const left = galleryTrack.getBoundingClientRect().left;
+  galleryIndex = photos.reduce((closest, photo, index) =>
+    Math.abs(photo.getBoundingClientRect().left - left) <
+    Math.abs(photos[closest].getBoundingClientRect().left - left) ? index : closest, 0);
+  galleryNavigation.querySelector(".gallery-position").textContent =
+    `${galleryIndex + 1} / ${photos.length}`;
+  galleryBack.disabled = galleryIndex === 0;
+  galleryForward.disabled = galleryIndex === photos.length - 1;
+}
+function moveGallery(direction) {
+  const index = Math.max(0, Math.min(photos.length - 1, galleryIndex + direction));
+  galleryTrack.scrollTo({
+    left: galleryTrack.scrollLeft + photos[index].getBoundingClientRect().left - galleryTrack.getBoundingClientRect().left,
+    behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+  });
+}
+galleryBack.addEventListener("click", () => moveGallery(-1));
+galleryForward.addEventListener("click", () => moveGallery(1));
+galleryTrack.addEventListener("scroll", updateGalleryPosition, { passive: true });
+window.addEventListener("resize", updateGalleryPosition);
+galleryNavigation.hidden = false;
+updateGalleryPosition();
 let currentPhoto = 0;
 let previousOverflow = "";
 function showPhoto(index) {
