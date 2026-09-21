@@ -1637,29 +1637,11 @@ html {
   margin-top: 25px;
   border-top: 1px solid #b4a17b40;
 }
-.arrival-photos summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.arrival-heading {
   padding: 18px 0;
-  list-style: none;
-  cursor: pointer;
+  margin: 0;
   font-size: 12px;
   color: var(--teal);
-}
-.arrival-photos summary::-webkit-details-marker {
-  display: none;
-}
-.arrival-photos summary:focus-visible {
-  outline: 3px solid #b49d67;
-  outline-offset: 5px;
-}
-.arrival-photos summary > span {
-  font-size: 23px;
-  font-weight: 400;
-}
-.arrival-photos[open] summary > span {
-  transform: rotate(45deg);
 }
 .arrival-gallery {
   display: grid;
@@ -1684,6 +1666,15 @@ html {
 }
 .heritage-photo {
   margin: 0;
+}
+.heritage-archive {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #b4a17b40;
 }
 .heritage-photo img {
   width: 100%;
@@ -1714,6 +1705,9 @@ html {
 }
 @media (max-width: 700px) {
   .arrival-gallery {
+    grid-template-columns: 1fr;
+  }
+  .heritage-archive {
     grid-template-columns: 1fr;
   }
   .heritage-inner {
