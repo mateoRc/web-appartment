@@ -2,6 +2,8 @@ import { parseCalendar } from "./ical.mjs";
 
 const MAX_BYTES = 512 * 1024;
 const CACHE_SECONDS = 300;
+const isBookingUrl = (url) => url.protocol === "https:" && !url.username && !url.password && !url.port &&
+  (url.hostname === "booking.com" || url.hostname.endsWith(".booking.com"));
 const json = (data, status = 200, cache = "no-store") => new Response(JSON.stringify(data), {
   status,
   headers: {
@@ -15,12 +17,12 @@ export async function availability(request, env, ctx, services = {}) {
   if (request.method !== "GET") return new Response(null, { status: 405, headers: { Allow: "GET" } });
   let reason = "missing_feed_secret";
   let upstreamStatus;
+  let requestSignal;
   try {
     if (!env.BOOKING_ICAL_URL?.trim()) throw new Error("Missing source");
     reason = "invalid_feed_url";
     const feed = new URL(env.BOOKING_ICAL_URL);
-    if (feed.protocol !== "https:" || feed.username || feed.password || feed.port ||
-        !(feed.hostname === "booking.com" || feed.hostname.endsWith(".booking.com"))) {
+    if (!isBookingUrl(feed)) {
       throw new Error("Invalid source");
     }
     const cache = services.cache ?? globalThis.caches?.default;
@@ -32,16 +34,35 @@ export async function availability(request, env, ctx, services = {}) {
     const cached = await cache?.match(key).catch(() => undefined);
     if (cached) return cached;
     reason = "feed_request_failed";
-    const upstream = await (services.fetch ?? fetch)(feed.href, {
-      headers: { Accept: "text/calendar" },
-      redirect: "error",
-      signal: AbortSignal.timeout(8000),
-    });
+    requestSignal = AbortSignal.timeout(8000);
+    let target = feed;
+    let upstream;
+    for (let redirects = 0; ; redirects++) {
+      reason = "feed_request_failed";
+      upstream = await (services.fetch ?? fetch)(target.href, {
+        headers: { Accept: "text/calendar" },
+        redirect: "manual",
+        signal: requestSignal,
+      });
+      if (![301, 302, 303, 307, 308].includes(upstream.status)) break;
+      const location = upstream.headers.get("Location");
+      await upstream.body?.cancel();
+      reason = "feed_redirect_invalid";
+      if (!location) throw new Error("Missing redirect");
+      if (redirects >= 3) { reason = "feed_redirect_limit"; throw new Error("Too many redirects"); }
+      const destination = new URL(location, target);
+      if (!isBookingUrl(destination)) {
+        reason = "feed_redirect_not_allowed";
+        throw new Error("Redirect outside Booking.com");
+      }
+      target = destination;
+    }
     if (!upstream.ok || !upstream.body) {
       reason = "feed_http_error";
       upstreamStatus = upstream.status;
       throw new Error("Calendar unavailable");
     }
+    reason = "feed_read_failed";
     const reader = upstream.body.getReader();
     const decoder = new TextDecoder();
     let bytes = 0;
@@ -70,7 +91,11 @@ export async function availability(request, env, ctx, services = {}) {
       `public, max-age=0, s-maxage=${CACHE_SECONDS}`);
     if (cache) ctx.waitUntil(cache.put(key, response.clone()).catch(() => {}));
     return response;
-  } catch {
+  } catch (error) {
+    if (["feed_request_failed", "feed_read_failed"].includes(reason)) {
+      if (requestSignal?.aborted || ["TimeoutError", "AbortError"].includes(error.name)) reason = "feed_timeout";
+      else if (reason === "feed_request_failed") reason = "feed_connection_failed";
+    }
     // Never log the upstream exception: it could contain the private feed URL.
     return json({ error: "availability_unavailable", reason, ...(upstreamStatus ? { upstreamStatus } : {}) }, 503);
   }

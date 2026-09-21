@@ -86,3 +86,38 @@ test("cache lookup failure falls back to the live feed", async () => {
   });
   assert.equal(response.status, 200);
 });
+test("follows relative and HTTPS Booking.com redirects with one shared timeout", async () => {
+  const calls = [];
+  const response = await availability(request, env, ctx, { fetch: async (url, options) => {
+    calls.push({ url, options });
+    if (calls.length === 1) return new Response(null, { status: 302, headers: { Location: "/v2/export?t=private-token" } });
+    if (calls.length === 2) return new Response(null, { status: 307, headers: { Location: "https://ical.booking.com/final" } });
+    return new Response(feed);
+  } });
+  assert.equal(response.status, 200);
+  assert.equal(calls.length, 3);
+  assert.equal(calls[1].url, "https://ical.booking.com/v2/export?t=private-token");
+  assert.ok(calls.every(({ options }) => options.redirect === "manual" && options.signal === calls[0].options.signal));
+});
+test("rejects redirects outside Booking.com and loops without leaking their URLs", async () => {
+  for (const location of ["https://example.com/private-token", "http://ical.booking.com/private-token", "https://booking.com.evil.test/private-token"]) {
+    let calls = 0;
+    const response = await availability(request, env, ctx, { fetch: async () => {
+      calls++; return new Response(null, { status: 302, headers: { Location: location } });
+    } });
+    assert.equal(calls, 1);
+    const body = await response.json();
+    assert.equal(body.reason, "feed_redirect_not_allowed");
+    assert.ok(!JSON.stringify(body).includes("private-token"));
+  }
+  const response = await availability(request, env, ctx, { fetch: async () => new Response(null, { status: 302, headers: { Location: "/loop" } }) });
+  assert.equal((await response.json()).reason, "feed_redirect_limit");
+});
+test("distinguishes timeouts, connection failures and interrupted response bodies", async () => {
+  for (const [name, reason] of [["TimeoutError", "feed_timeout"], ["TypeError", "feed_connection_failed"]]) {
+    const response = await availability(request, env, ctx, { fetch: async () => { const error = new Error("private-token"); error.name = name; throw error; } });
+    assert.equal((await response.json()).reason, reason);
+  }
+  const response = await availability(request, env, ctx, { fetch: async () => new Response(new ReadableStream({ start(controller) { controller.error(new Error("private-token")); } })) });
+  assert.equal((await response.json()).reason, "feed_read_failed");
+});
