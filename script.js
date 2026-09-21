@@ -23,6 +23,15 @@ if (CONTACT.phone) {
   phone.replaceWith(link);
 }
 document.getElementById("year").textContent = new Date().getFullYear();
+const header = document.querySelector(".header");
+function updateHeader() {
+  // Separate thresholds keep the transition steady near the top.
+  const compact = header.classList.contains("is-compact");
+  header.classList.toggle("is-compact", compact ? window.scrollY > 12 : window.scrollY > 48);
+}
+window.addEventListener("scroll", updateHeader, { passive: true });
+window.addEventListener("pageshow", updateHeader);
+updateHeader();
 const toggle = document.querySelector(".menu-toggle");
 const navigation = document.getElementById("navigation");
 function closeMenu() {

@@ -3,3 +3,4 @@ dist/
 node_modules/
 .chrome-check/
 .gallery-chrome
+.header-chrome

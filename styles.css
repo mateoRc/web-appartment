@@ -83,6 +83,13 @@ textarea:focus-visible {
 .skip-link:focus {
   top: 8px;
 }
+.header-shell {
+  height: 92px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  pointer-events: none;
+}
 .header {
   height: 92px;
   display: flex;
@@ -93,6 +100,36 @@ textarea:focus-visible {
   background: var(--paper);
   position: relative;
   z-index: 20;
+  pointer-events: auto;
+  transition: height .28s ease, background-color .28s ease, box-shadow .28s ease;
+}
+.header > .brand {
+  transition: font-size .28s ease;
+}
+.header > .brand span {
+  max-height: 12px;
+  overflow: hidden;
+  transition: opacity .2s ease, max-height .28s ease, margin-top .28s ease;
+}
+.header.is-compact {
+  height: 64px;
+  background: rgba(250, 249, 245, .94);
+  box-shadow: 0 4px 20px #173f3c0d;
+}
+.header.is-compact > .brand {
+  font-size: 38px;
+}
+.header.is-compact > .brand span {
+  opacity: 0;
+  max-height: 0;
+  margin-top: 0;
+}
+@supports ((backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px))) {
+  .header.is-compact {
+    background: rgba(250, 249, 245, .84);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
 }
 .brand {
   font-family: Georgia, serif;
@@ -904,7 +941,16 @@ dialog button {
 }
 @media (max-width: 700px) {
   html {
-    scroll-padding-top: 20px;
+    scroll-padding-top: 76px;
+  }
+  .header-shell {
+    height: 79px;
+  }
+  .header.is-compact {
+    height: 58px;
+  }
+  .header.is-compact > .brand {
+    font-size: 36px;
   }
   .header {
     height: 79px;
@@ -954,7 +1000,7 @@ dialog button {
   }
   .header nav {
     position: absolute;
-    top: 79px;
+    top: 100%;
     left: 0;
     right: 0;
     background: var(--paper);
