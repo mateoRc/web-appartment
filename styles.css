@@ -1750,8 +1750,31 @@ html {
 }
 @media (max-width: 700px) {
   .heritage-archive {
-    gap: 12px;
-    padding-top: 20px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    width: calc(100% + 16px);
+    max-width: 520px;
+    justify-self: center;
+    padding: 12px 0 14px;
+    border-top: 0;
+    isolation: isolate;
+  }
+  .heritage-archive .heritage-photo {
+    width: 92%;
+    padding: 5px 5px 12px;
+    background: #f8f5eb;
+    box-shadow: 0 6px 18px #403b2921, 0 1px 3px #403b2914;
+  }
+  .heritage-archive .heritage-photo:first-child {
+    justify-self: start;
+    transform: rotate(-2deg);
+  }
+  .heritage-archive .heritage-photo:last-child {
+    justify-self: end;
+    margin-top: -12px;
+    transform: rotate(2deg);
+    position: relative;
+    z-index: 1;
   }
   .heritage-inner {
     grid-template-columns: 1fr;

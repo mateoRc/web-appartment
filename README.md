@@ -26,4 +26,4 @@ Google Fonts provides DM Sans and Manrope; system font fallbacks keep the page u
 
 Booking.com and Airbnb brand icons are served locally from `assets/*-logo.svg`, sourced from Simple Icons via cdn.simpleicons.org. The WhatsApp icon uses the same source and is embedded inline. Booking.com links to the owner-supplied listing; Airbnb is displayed without a link.
 
-The finish includes a matching native scrollbar, fine accent lines and a compact heritage section. On mobile, the historic panorama spans the full content width, with an inset caption and two archival photos side by side. Desktop hero parallax uses passive scrolling and animation frames, and turns off on mobile and for reduced-motion preferences.
+The finish includes a matching native scrollbar, fine accent lines and a compact heritage section. On mobile, the historic panorama spans the full content width, with an inset caption and two larger archival photos arranged as lightly tilted, overlapping postcards. Desktop hero parallax uses passive scrolling and animation frames, and turns off on mobile and for reduced-motion preferences.
