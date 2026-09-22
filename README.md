@@ -21,7 +21,7 @@ Cloudflare Workers deployment is configured in `wrangler.jsonc`. Set the dashboa
 
 ## Photography advice
 
-The terrace is the strongest lead photo because it shows the actual waterfront setting. For a sharper desktop hero, supply a landscape original at least 2000 pixels wide (the current image is 1024 × 683). Brighter interior photos in soft daylight, with straight verticals and consistent lighting, would improve the presentation.
+The terrace leads with the owner-supplied 4096 × 2732 upscaled photo (`assets/terrace-clear.webp`). The original is retained locally; the build publishes responsive 960px and 1920px WebP versions (about 94 KB and 297 KB), plus a 1200px JPEG for social previews. Brighter interior photos in soft daylight, with straight verticals and consistent lighting, would improve the presentation.
 
 Google Fonts provides DM Sans and Manrope; system font fallbacks keep the page usable offline. Photos are served locally. The hero is eagerly loaded and gallery photos are lazy loaded. Navigation and content remain available without JavaScript. Gallery supports keyboard navigation, Escape, modal focus containment, and reduced motion preferences.
 
