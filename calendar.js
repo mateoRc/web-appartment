@@ -14,7 +14,8 @@ window.MareCalendar = (() => {
   let data = null;
   let state = "idle";
   let expiryTimer;
-  const fresh = () => data && Date.now() - Date.parse(data.fetchedAt) < 600000;
+  let expiresAt = 0;
+  const fresh = () => data && performance.now() < expiresAt;
   function render() {
     const locale = document.documentElement.lang;
     const now = today();
@@ -67,24 +68,49 @@ window.MareCalendar = (() => {
       days.lastChild.append(cell);
     }
   }
+  async function fetchCalendar() {
+    // AbortSignal.timeout is unavailable in some older mobile browsers.
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
+    const started = performance.now();
+    try {
+      const response = await fetch("/api/availability", { signal: controller.signal, cache: "no-store" });
+      if (!response.ok) throw new Error("Unavailable");
+      const result = await response.json();
+      // Use the server clock so a phone's clock cannot reject a fresh response.
+      // Include cache age, transfer time and HTTP Date's one-second precision.
+      const serverTime = Date.parse(response.headers.get("Date"));
+      const cacheAge = Number(response.headers.get("Age") || 0) * 1000;
+      const age = (Number.isFinite(serverTime) ? serverTime : Date.now()) - Date.parse(result.fetchedAt)
+        + cacheAge + performance.now() - started + 1000;
+      if (!Number.isFinite(age) || age < -60000 || age >= 600000 || !Array.isArray(result.blocked) ||
+          !result.blocked.every((range) => range && /^\d{4}-\d{2}-\d{2}$/.test(range.start) && /^\d{4}-\d{2}-\d{2}$/.test(range.end) && range.end > range.start)) {
+        throw new Error("Invalid calendar");
+      }
+      return { result, remaining: 600000 - Math.max(0, age) };
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
   async function load() {
     if (state === "loading") return;
     if (fresh()) { render(); return; }
     state = "loading";
     render();
     try {
-      const response = await fetch("/api/availability", { signal: AbortSignal.timeout(10000) });
-      if (!response.ok) throw new Error("Unavailable");
-      const result = await response.json();
-      const age = Date.now() - Date.parse(result.fetchedAt);
-      if (!Number.isFinite(age) || age < -60000 || age >= 600000 || !Array.isArray(result.blocked) ||
-          !result.blocked.every((range) => /^\d{4}-\d{2}-\d{2}$/.test(range.start) && /^\d{4}-\d{2}-\d{2}$/.test(range.end) && range.end > range.start)) {
-        throw new Error("Invalid calendar");
+      let fetched;
+      try {
+        fetched = await fetchCalendar();
+      } catch {
+        // One short automatic retry recovers from transient network/feed failures.
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        fetched = await fetchCalendar();
       }
-      data = result;
+      data = fetched.result;
+      expiresAt = performance.now() + fetched.remaining;
       state = "ready";
       clearTimeout(expiryTimer);
-      expiryTimer = setTimeout(() => { data = null; state = "idle"; if (container.open) load(); }, 600000 - Math.max(0, age));
+      expiryTimer = setTimeout(() => { data = null; state = "idle"; if (container.open) load(); }, fetched.remaining);
     } catch {
       data = null;
       state = "error";
