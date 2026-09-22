@@ -14,7 +14,7 @@ Cloudflare Workers deployment is configured in `wrangler.jsonc`. Set the dashboa
 
 - Owner contacts are configured: WhatsApp/phone `+385 98 170 0612`, email `marizahm305@gmail.com`. Update `CONTACT` in `script.js` and the HTML fallback links together when changing them.
 - The terrace leads the page. The six-photo gallery includes the kitchen, living room, both bedrooms, beach view and hallway last. It uses one horizontal photo strip on every screen size, with swipe/trackpad scrolling, arrow controls and a photo counter. Two upscaled historical images appear separately in the heritage section, served from `assets`; originals remain in `historical`.
-- Availability buttons open the owner's WhatsApp chat. The form validates dates and opens WhatsApp with the guest's name, dates, optional email and message prefilled. Guests review and send the message themselves. A visible continuation link is provided if a browser blocks the new tab.
+- The header Availability and hero Check Availability buttons scroll to the final contact section containing the calendar and enquiry form. The form validates dates and opens WhatsApp with the guest's name, dates, optional email and message prefilled. Guests review and send the message themselves. A visible continuation link is provided if a browser blocks the new tab.
 - Confirm amenities and third-party platform availability with the owner. The Google Maps embed and directions link use the supplied full address; check Google's marker against the entrance before publishing.
 - Add the final domain's canonical URL and absolute Open Graph image URL when deployed.
 
