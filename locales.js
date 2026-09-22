@@ -2,6 +2,7 @@
 // Bind individual text nodes so switching languages preserves icons, inputs and listeners.
 window.MareLocale = (() => {
   const translations = {
+    "You’re offline. The saved address and contact details are available. Live availability, maps and online enquiries need a connection.": ["Sie sind offline. Die gespeicherte Adresse und Kontaktdaten sind verfügbar. Aktuelle Verfügbarkeit, Karten und Online-Anfragen benötigen eine Verbindung.", "Sei offline. L’indirizzo e i contatti salvati sono disponibili. Disponibilità aggiornata, mappe e richieste online richiedono una connessione.", "Vous êtes hors ligne. L’adresse et les coordonnées enregistrées restent disponibles. Les disponibilités actualisées, les cartes et les demandes en ligne nécessitent une connexion."],
     "SOON": ["BALD", "PRESTO", "BIENTÔT"],
     "Airbnb — coming soon": ["Airbnb – demnächst verfügbar", "Airbnb – prossimamente", "Airbnb – bientôt disponible"],
     "View availability calendar": ["Belegungskalender ansehen", "Vedi il calendario", "Voir le calendrier"],

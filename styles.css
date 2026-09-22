@@ -650,6 +650,18 @@ h2 em {
   border-top: 1px solid #203e3b26;
   font-size: 14px;
 }
+
+[data-offline] .google-map {
+  display: none;
+}
+#offline-notice:not([hidden]) {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 14px;
+}
 .contact-details > span {
   display: flex;
   flex-wrap: wrap;

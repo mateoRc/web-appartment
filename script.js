@@ -18,10 +18,8 @@ if (CONTACT.email) {
 }
 if (CONTACT.phone) {
   const phone = document.querySelector("[data-phone]");
-  const link = document.createElement("a");
-  link.href = `tel:${CONTACT.phone.replace(/[^+\d]/g, "")}`;
-  link.textContent = CONTACT.phone;
-  phone.replaceWith(link);
+  phone.href = `tel:${CONTACT.phone.replace(/[^+\d]/g, "")}`;
+  phone.textContent = CONTACT.phone;
 }
 document.getElementById("year").textContent = new Date().getFullYear();
 const header = document.querySelector(".header");

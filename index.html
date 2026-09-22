@@ -52,12 +52,16 @@
     </script>
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23173f3c'/%3E%3Ctext x='10' y='46' font-family='Georgia' font-size='48' fill='%23fff'%3Em%3C/text%3E%3C/svg%3E"
+      type="image/svg+xml"
+      href="assets/favicon.svg"
     />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="assets/icon-192.png" />
     <script src="locales.js" defer></script>
     <script src="calendar.js" defer></script>
     <script src="script.js" defer></script>
+    <script src="offline.js" defer></script>
   </head>
   <body>
     <svg
@@ -341,6 +345,7 @@
             Obala Maršala Tita 29<br />52221 Rabac, Istria, Croatia
           </address>
           <p>Free private parking included.</p>
+          <p id="offline-notice" role="status" hidden>You’re offline. The saved address and contact details are available. Live availability, maps and online enquiries need a connection.</p>
           <a
             class="text-link"
             href="https://www.google.com/maps/dir/?api=1&amp;destination=Obala%20Mar%C5%A1ala%20Tita%2029%2C%2052221%20Rabac%2C%20Croatia"

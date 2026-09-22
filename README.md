@@ -30,6 +30,14 @@ The contact section shows larger Booking.com and Airbnb links above the enquiry 
 The finish includes a matching native scrollbar, fine accent lines and a compact heritage section. On mobile, the historic panorama spans the full content width, with an inset caption and a single larger archival photo styled as a lightly tilted postcard on mobile and desktop. Desktop hero parallax uses passive scrolling and animation frames, and turns off on mobile and for reduced-motion preferences.
 
 
+## Offline viewing and home-screen installation
+
+After a successful online visit, a small service worker saves the page, address, contact details, scripts, app icons and terrace images. Other local photos are saved as viewed. On weak connections, saved content is used if the request takes longer than four seconds; online requests otherwise refresh the cache. The location section shows a translated notice when the device is offline. Google Maps, Booking.com, WhatsApp and live availability still need their own connections; calendar API responses and enquiry submissions are never stored by the service worker.
+
+The manifest supports browser-provided home-screen installation, opening directly at the location section. HTTPS (or localhost for development) is required. Offline access needs an initial successful visit and browser storage; clearing browser data removes it. The build automatically versions the offline cache from file contents. Updated workers activate after existing tabs close, then remove only obsolete Mare caches. No forced reload interrupts an enquiry.
+
+Run `node --test calendar.test.mjs sw.test.mjs worker/calendar.test.mjs` for all calendar and service-worker checks. To verify manually, serve `dist`, visit online, wait for the service worker to activate, then switch DevTools to Offline and reload. Confirm the address and phone remain visible and the calendar does not show cached availability. Restore the connection and confirm the offline notice disappears.
+
 ## Languages
 
 English, German, Italian and French are available through the EN / DE / IT / FR buttons at the bottom of the mobile navigation and beside desktop navigation links. Switching updates the current page without a reload and preserves form entries. On first visit, the first supported browser language is selected, including regional variants such as de-AT or fr-CA. A saved manual selection takes priority. English is the fallback when no browser language is supported or JavaScript is unavailable.
