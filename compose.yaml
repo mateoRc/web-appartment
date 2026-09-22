@@ -10,6 +10,8 @@ services:
       - ./script.js:/usr/share/nginx/html/script.js:ro
       - ./locales.js:/usr/share/nginx/html/locales.js:ro
       - ./calendar.js:/usr/share/nginx/html/calendar.js:ro
+      - ./robots.txt:/usr/share/nginx/html/robots.txt:ro
+      - ./sitemap.xml:/usr/share/nginx/html/sitemap.xml:ro
       - ./assets:/usr/share/nginx/html/assets:ro
       - ./historical:/usr/share/nginx/html/historical:ro
     restart: unless-stopped

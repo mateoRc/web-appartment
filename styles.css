@@ -643,8 +643,8 @@ h2 em {
   grid-column: 1 / -1;
   display: flex;
   flex-wrap: wrap;
-  gap: 16px 40px;
-  padding-top: 22px;
+  gap: 0 22px;
+  padding-top: 16px;
   border-top: 1px solid #203e3b26;
   font-size: 14px;
 }

@@ -16,7 +16,8 @@ Cloudflare Workers deployment is configured in `wrangler.jsonc`. Set the dashboa
 - The terrace leads the page. The six-photo gallery includes the kitchen, living room, both bedrooms, beach view and hallway last. It uses one horizontal photo strip on every screen size, with swipe/trackpad scrolling, arrow controls and a photo counter. Two upscaled historical images appear separately in the heritage section, served from `assets`; originals remain in `historical`.
 - The header Availability and hero Check Availability buttons scroll to the final contact section containing the calendar and enquiry form. The form validates dates and opens WhatsApp with the guest's name, dates, optional email and message prefilled. Guests review and send the message themselves. A visible continuation link is provided if a browser blocks the new tab.
 - Confirm amenities and third-party platform availability with the owner. The Google Maps embed and directions link use the supplied full address; check Google's marker against the entrance before publishing.
-- Add the final domain's canonical URL and absolute Open Graph image URL when deployed.
+- SEO is configured for `https://rabac.mateolabs.dev/`: canonical URL, social preview image, LodgingBusiness structured data, `robots.txt` and `sitemap.xml`. Before switching domains, replace that origin in `index.html`, `robots.txt` and `sitemap.xml`, update `wrangler.jsonc`, and rebuild. Submit the final sitemap in Google Search Console after deployment. Language switches share one URL; they are not separate indexable language pages.
+- `_headers` supplies basic security headers on deployed static assets. The build publishes only the listed website files. Docker must be recreated with `docker compose up -d` after adding new bind mounts; a running older container can otherwise return 404 for new scripts.
 
 ## Photography advice
 
