@@ -123,5 +123,6 @@ window.MareCalendar = (() => {
   next.addEventListener("click", () => { offset = Math.min(11, offset + 1); render(); });
   document.addEventListener("visibilitychange", () => { if (!document.hidden && container.open) load(); });
   container.hidden = false;
+  if (container.open) load();
   return { render };
 })();

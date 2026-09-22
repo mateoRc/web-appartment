@@ -640,18 +640,30 @@ h2 em {
   margin-left: 13px;
 }
 .contact-details {
-  font-size: 12px;
-  display: grid;
-  gap: 6px;
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 40px;
+  padding-top: 22px;
+  border-top: 1px solid #203e3b26;
+  font-size: 14px;
 }
 .contact-details > span {
   display: flex;
-  gap: 18px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 14px;
   color: #6d7869;
 }
 .contact-details a,
 .contact-details [data-phone] {
   color: var(--ink);
+}
+.contact-details a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  overflow-wrap: anywhere;
 }
 .contact-copy .contact-note {
   font-size: 10px !important;
@@ -1542,33 +1554,39 @@ dialog button {
   margin-top: 28px;
 }
 .booking-platforms > p {
-  font-size: 10px;
+  font-size: 14px;
   color: #687565;
   margin-bottom: 12px;
 }
 .platform-logos {
   display: flex;
   align-items: center;
-  gap: 25px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 .platform-logo {
   display: inline-flex;
-  min-height: 44px;
+  min-height: 76px;
+  padding: 16px;
+  border: 1px solid #203e3b20;
+  border-radius: 10px;
+  background: #fafbf799;
   align-items: center;
-  gap: 7px;
+  gap: 10px;
   line-height: 1;
-  font-size: 20px;
+  font-size: 26px;
   font-weight: 700;
   letter-spacing: -0.8px;
 }
 .platform-logo img {
   display: block;
   flex-shrink: 0;
+  width: 34px;
+  height: 34px;
 }
 .booking-logo {
   color: #003b95;
-  font-size: 18px;
+  font-size: 24px;
   letter-spacing: -0.7px;
 }
 .booking-logo > span > span {
@@ -1622,7 +1640,7 @@ dialog button {
     top: 12px;
   }
   .platform-logos {
-    gap: 22px;
+    gap: 12px;
   }
   .booking-form .button {
     gap: 12px;
