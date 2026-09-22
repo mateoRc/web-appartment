@@ -32,7 +32,15 @@ export async function availability(request, env, ctx, services = {}) {
     const key = new Request(`${new URL(request.url).origin}/api/availability?source=${hash}`);
     // Cache failures should not prevent us from reading the actual calendar.
     const cached = await cache?.match(key).catch(() => undefined);
-    if (cached) return cached;
+    if (cached) {
+      try {
+        const age = Date.now() - Date.parse((await cached.clone().json()).fetchedAt);
+        // Do not rely solely on the edge cache's expiry metadata.
+        if (cached.ok && Number.isFinite(age) && age >= -60000 && age < CACHE_SECONDS * 1000) return cached;
+      } catch {
+        // Corrupt cache entries must also fall back to the live feed.
+      }
+    }
     reason = "feed_request_failed";
     requestSignal = AbortSignal.timeout(8000);
     let target = feed;

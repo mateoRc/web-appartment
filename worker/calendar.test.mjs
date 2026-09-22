@@ -71,6 +71,24 @@ test("cache reuse avoids upstream fetches and secret changes invalidate cached d
 test("API refuses writes", async () => {
   assert.equal((await availability(new Request(request.url, { method: "POST" }), env, ctx)).status, 405);
 });
+
+test("expired or corrupt cache entries are refreshed instead of reaching the browser", async () => {
+  for (const cached of [
+    JSON.stringify({ blocked: [], fetchedAt: new Date(Date.now() - 301000).toISOString() }),
+    JSON.stringify({ blocked: [], fetchedAt: "invalid" }),
+    JSON.stringify({ blocked: [], fetchedAt: new Date(Date.now() + 120000).toISOString() }),
+    "broken cache",
+  ]) {
+    let calls = 0;
+    const response = await availability(request, env, ctx, {
+      cache: { match: async () => new Response(cached), put: async () => {} },
+      fetch: async () => { calls++; return new Response(feed); },
+    });
+    assert.equal(calls, 1);
+    assert.equal(response.status, 200);
+    assert.deepEqual((await response.json()).blocked, [{ start: "2030-06-10", end: "2030-06-13" }]);
+  }
+});
 test("safe diagnostics distinguish configuration, HTTP and date-format failures", async () => {
   const missing = await availability(request, {}, ctx);
   assert.equal((await missing.json()).reason, "missing_feed_secret");
