@@ -212,11 +212,13 @@ function validateDates() {
   departure.setCustomValidity(
     departure.value && arrival.value && departure.value <= arrival.value
       ? t("Please choose a departure after your arrival.")
-      : "",
+      : window.MareCalendar.selectionError(),
   );
 }
 arrival.addEventListener("change", validateDates);
 departure.addEventListener("change", validateDates);
+arrival.addEventListener("input", validateDates);
+departure.addEventListener("input", validateDates);
 validateDates();
 function inquiryMessage() {
   const data = new FormData(form);

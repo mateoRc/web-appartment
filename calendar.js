@@ -6,6 +6,13 @@ window.MareCalendar = (() => {
   const retry = document.getElementById("calendar-retry");
   const previous = document.getElementById("calendar-prev");
   const next = document.getElementById("calendar-next");
+  const form = document.getElementById("booking-form");
+  const arrival = form.elements.arrival;
+  const departure = form.elements.departure;
+  const days = document.getElementById("calendar-days");
+  let anchor = null;
+  let drag = null;
+  let buttons = [];
   const t = (key) => window.MareLocale.t(key);
   const today = () => new Intl.DateTimeFormat("en-CA", {
     timeZone: "Europe/Zagreb", year: "numeric", month: "2-digit", day: "2-digit",
@@ -16,6 +23,80 @@ window.MareCalendar = (() => {
   let expiryTimer;
   let expiresAt = 0;
   const fresh = () => data && performance.now() < expiresAt;
+  const available = (date) => fresh() && date >= today() &&
+    !data.blocked.some((range) => date >= range.start && date < range.end);
+  const validRange = (start, end) => available(start) && available(end) &&
+    !data.blocked.some((range) => range.start <= end && range.end > start);
+  function selectionError() {
+    if (!fresh()) return "";
+    const start = arrival.value;
+    const end = departure.value;
+    return (start && !available(start)) || (end && !available(end)) ||
+      (start && end && end > start && !validRange(start, end))
+      ? t("Please choose only available dates.") : "";
+  }
+  function paint(start = arrival.value, end = departure.value) {
+    const valid = start && end && end > start && validRange(start, end);
+    for (const button of buttons) {
+      const selected = available(button.dataset.date) &&
+        (valid ? button.dataset.date >= start && button.dataset.date <= end : button.dataset.date === start);
+      button.classList.toggle("calendar-selected", Boolean(selected));
+      button.setAttribute("aria-pressed", String(Boolean(selected)));
+    }
+  }
+  function choose(date) {
+    if (!available(date)) return;
+    if (anchor && date !== anchor) {
+      const [start, end] = [anchor, date].sort();
+      if (!validRange(start, end)) return;
+      arrival.value = start;
+      departure.value = end;
+      anchor = null;
+    } else {
+      anchor = date;
+      arrival.value = date;
+      departure.value = "";
+    }
+    arrival.dispatchEvent(new Event("change", { bubbles: true }));
+    departure.dispatchEvent(new Event("change", { bubbles: true }));
+    paint();
+  }
+  days.addEventListener("pointerdown", (event) => {
+    const button = event.target.closest("button[data-date]");
+    if (event.button !== 0 || !button || !available(button.dataset.date)) return;
+    drag = { pointer: event.pointerId, start: button.dataset.date, end: button.dataset.date };
+    days.setPointerCapture(event.pointerId);
+  });
+  days.addEventListener("pointermove", (event) => {
+    if (!drag || drag.pointer !== event.pointerId) return;
+    const button = document.elementFromPoint(event.clientX, event.clientY)?.closest("button[data-date]");
+    drag.end = button && days.contains(button) ? button.dataset.date : null;
+    const [start, end] = [drag.start, drag.end || drag.start].sort();
+    if (drag.end && validRange(start, end)) paint(start, end);
+    else paint();
+  });
+  days.addEventListener("pointerup", (event) => {
+    if (!drag || drag.pointer !== event.pointerId) return;
+    const { start, end } = drag;
+    drag = null;
+    if (end === start) choose(start);
+    else if (end && validRange(...[start, end].sort())) {
+      anchor = start;
+      choose(end);
+    }
+    paint();
+  });
+  const cancelDrag = () => { drag = null; paint(); };
+  days.addEventListener("pointercancel", cancelDrag);
+  days.addEventListener("lostpointercapture", cancelDrag);
+  days.addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-date]");
+    if (event.detail === 0 && button) choose(button.dataset.date);
+  });
+  for (const input of [arrival, departure]) {
+    input.addEventListener("input", () => { anchor = null; paint(); });
+    input.addEventListener("change", () => paint());
+  }
   function render() {
     const locale = document.documentElement.lang;
     const now = today();
@@ -47,8 +128,8 @@ window.MareCalendar = (() => {
       row.append(th);
     }
     weekdays.replaceChildren(row);
-    const days = document.getElementById("calendar-days");
     days.replaceChildren();
+    buttons = [];
     const first = (month.getUTCDay() + 6) % 7;
     const count = new Date(Date.UTC(month.getUTCFullYear(), month.getUTCMonth() + 1, 0)).getUTCDate();
     for (let index = 0; index < Math.ceil((first + count) / 7) * 7; index++) {
@@ -60,13 +141,21 @@ window.MareCalendar = (() => {
         const iso = date.toISOString().slice(0, 10);
         const past = iso < now;
         const blocked = data.blocked.some((range) => iso >= range.start && iso < range.end);
-        cell.textContent = day;
         cell.className = past ? "calendar-past" : blocked ? "calendar-blocked" : "calendar-unblocked";
-        cell.setAttribute("aria-label", `${new Intl.DateTimeFormat(locale, { dateStyle: "full", timeZone: "UTC" }).format(date)}: ${t(past ? "Past date" : blocked ? "Unavailable" : "No block shown")}`);
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = day;
+        button.dataset.date = iso;
+        button.disabled = past || blocked;
+        button.setAttribute("aria-label", `${new Intl.DateTimeFormat(locale, { dateStyle: "full", timeZone: "UTC" }).format(date)}: ${t(past ? "Past date" : blocked ? "Unavailable" : "Available")}`);
+        cell.append(button);
+        buttons.push(button);
         if (iso === now) cell.setAttribute("aria-current", "date");
       }
       days.lastChild.append(cell);
     }
+    paint();
+    departure.dispatchEvent(new Event("change", { bubbles: true }));
   }
   async function fetchCalendar() {
     // AbortSignal.timeout is unavailable in some older mobile browsers.
@@ -124,5 +213,5 @@ window.MareCalendar = (() => {
   document.addEventListener("visibilitychange", () => { if (!document.hidden && container.open) load(); });
   container.hidden = false;
   if (container.open) load();
-  return { render };
+  return { render, selectionError };
 })();
