@@ -6,6 +6,13 @@ window.MareCalendar = (() => {
   const retry = document.getElementById("calendar-retry");
   const previous = document.getElementById("calendar-prev");
   const next = document.getElementById("calendar-next");
+  const picker = document.getElementById("calendar-picker");
+  const monthWheel = document.getElementById("calendar-month-wheel");
+  const yearWheel = document.getElementById("calendar-year-wheel");
+  const pickerDone = document.getElementById("calendar-picker-done");
+  let pickerOffset = 0;
+  let pickerMonths = [];
+  const wheelTimers = new Map();
   const form = document.getElementById("booking-form");
   const arrival = form.elements.arrival;
   const departure = form.elements.departure;
@@ -23,6 +30,100 @@ window.MareCalendar = (() => {
   let expiryTimer;
   let expiresAt = 0;
   const fresh = () => data && performance.now() < expiresAt;
+  function closePicker(restoreFocus = false) {
+    picker.hidden = true;
+    monthLabel.setAttribute("aria-expanded", "false");
+    for (const timer of wheelTimers.values()) clearTimeout(timer);
+    if (restoreFocus) monthLabel.focus();
+  }
+  function fillWheel(wheel, options, selected, onSelect) {
+    clearTimeout(wheelTimers.get(wheel));
+    wheel.replaceChildren();
+    const select = (index) => {
+      if (picker.hidden || index === selected) return;
+      selected = index;
+      [...wheel.children].forEach((button, i) => button.setAttribute("aria-pressed", String(i === index)));
+      onSelect(options[index].value);
+    };
+    options.forEach((option, index) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = option.label;
+      button.setAttribute("aria-pressed", String(index === selected));
+      button.addEventListener("click", () => {
+        wheel.scrollTop = index * 40;
+        select(index);
+      });
+      button.addEventListener("keydown", (event) => {
+        if (!["ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) return;
+        event.preventDefault();
+        const target = event.key === "Home" ? 0 : event.key === "End" ? options.length - 1
+          : Math.max(0, Math.min(options.length - 1, index + (event.key === "ArrowUp" ? -1 : 1)));
+        wheel.scrollTop = target * 40;
+        select(target);
+        wheel.children[target].focus({ preventScroll: true });
+      });
+      wheel.append(button);
+    });
+    wheel.scrollTop = selected * 40;
+    wheel.onscroll = () => {
+      clearTimeout(wheelTimers.get(wheel));
+      wheelTimers.set(wheel, setTimeout(() => {
+        select(Math.max(0, Math.min(options.length - 1, Math.round(wheel.scrollTop / 40))));
+      }, 120));
+    };
+  }
+  function fillMonths() {
+    const selected = pickerMonths[pickerOffset];
+    const options = pickerMonths.filter((date) => date.getUTCFullYear() === selected.getUTCFullYear())
+      .map((date) => ({ value: pickerMonths.indexOf(date), label: new Intl.DateTimeFormat(document.documentElement.lang,
+        { month: "long", timeZone: "UTC" }).format(date) }));
+    fillWheel(monthWheel, options, options.findIndex((option) => option.value === pickerOffset),
+      (value) => { pickerOffset = value; });
+  }
+  function openPicker() {
+    pickerOffset = offset;
+    pickerMonths = Array.from({ length: 12 }, (_, index) => {
+      const date = new Date(`${today().slice(0, 7)}-01T00:00:00Z`);
+      date.setUTCMonth(date.getUTCMonth() + index);
+      return date;
+    });
+    picker.hidden = false;
+    monthLabel.setAttribute("aria-expanded", "true");
+    fillMonths();
+    const years = [...new Set(pickerMonths.map((date) => date.getUTCFullYear()))];
+    fillWheel(yearWheel, years.map((year) => ({ value: year, label: String(year) })),
+      years.indexOf(pickerMonths[pickerOffset].getUTCFullYear()), (year) => {
+        const month = pickerMonths[pickerOffset].getUTCMonth();
+        const candidates = pickerMonths.map((date, index) => ({ date, index }))
+          .filter(({ date }) => date.getUTCFullYear() === year);
+        pickerOffset = candidates.reduce((best, item) =>
+          Math.abs(item.date.getUTCMonth() - month) < Math.abs(best.date.getUTCMonth() - month) ? item : best).index;
+        fillMonths();
+      });
+    // Focus the selected month without scrolling the page.
+    monthWheel.children[[...monthWheel.children].findIndex((button) => button.getAttribute("aria-pressed") === "true")].focus({ preventScroll: true });
+  }
+  monthLabel.addEventListener("click", () => picker.hidden ? openPicker() : closePicker());
+  pickerDone.addEventListener("click", () => {
+    // Read the resting wheel positions even if the scroll debounce has not fired yet.
+    const yearIndex = Math.round(yearWheel.scrollTop / 40);
+    yearWheel.children[yearIndex]?.click();
+    const monthIndex = Math.round(monthWheel.scrollTop / 40);
+    monthWheel.children[monthIndex]?.click();
+    offset = pickerOffset;
+    closePicker(true);
+    render();
+  });
+  picker.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") { event.preventDefault(); closePicker(true); }
+  });
+  document.addEventListener("click", (event) => {
+    if (!picker.hidden && !picker.contains(event.target) && event.target !== monthLabel) closePicker();
+  });
+  container.addEventListener("focusout", (event) => {
+    if (!container.contains(event.relatedTarget)) closePicker();
+  });
   const available = (date) => fresh() && date >= today() &&
     !data.blocked.some((range) => date >= range.start && date < range.end);
   const validRange = (start, end) => available(start) && available(end) &&
@@ -98,6 +199,7 @@ window.MareCalendar = (() => {
     input.addEventListener("change", () => paint());
   }
   function render() {
+    closePicker();
     const locale = document.documentElement.lang;
     const now = today();
     const month = new Date(`${now.slice(0, 7)}-01T00:00:00Z`);

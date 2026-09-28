@@ -18,7 +18,11 @@ function element() {
     setPointerCapture() {},
     append(child) { this.children.push(child); this.lastChild = child; },
     replaceChildren(...children) { this.children = children; },
-    setAttribute() {},
+    attributes: {}, scrollTop: 0,
+    setAttribute(name, value) { this.attributes[name] = value; },
+    getAttribute(name) { return this.attributes[name]; },
+    focus() {},
+    click() { this.listeners.click?.({ target: this }); },
   };
 }
 async function browser(fetcher, clockOffset = 0) {
@@ -74,6 +78,49 @@ function nextMonthDates() {
   const prefix = date.toISOString().slice(0, 7);
   return (day) => `${prefix}-${String(day).padStart(2, "0")}`;
 }
+test("month picker jumps within the twelve-month window without changing stay dates", async () => {
+  const { elements, inputs } = await browser(() => response());
+  const heading = elements.get("calendar-month");
+  const picker = elements.get("calendar-picker");
+  const months = elements.get("calendar-month-wheel");
+  const years = elements.get("calendar-year-wheel");
+  inputs.arrival.value = "2030-01-02";
+  inputs.departure.value = "2030-01-05";
+  heading.click();
+  assert.equal(picker.hidden, false);
+  assert.equal(heading.getAttribute("aria-expanded"), "true");
+  years.children.at(-1).click();
+  months.children.at(-1).click();
+  elements.get("calendar-picker-done").click();
+  assert.equal(picker.hidden, true);
+  assert.equal(elements.get("calendar-next").disabled, true);
+  assert.equal(inputs.arrival.value, "2030-01-02");
+  assert.equal(inputs.departure.value, "2030-01-05");
+  heading.click();
+  years.children[0].click();
+  months.children[0].click();
+  elements.get("calendar-picker-done").click();
+  assert.equal(elements.get("calendar-prev").disabled, true);
+});
+test("Escape cancels the month picker and keyboard navigation can apply a month", async () => {
+  const { elements } = await browser(() => response());
+  const heading = elements.get("calendar-month");
+  const initial = heading.textContent;
+  const picker = elements.get("calendar-picker");
+  heading.click();
+  const months = elements.get("calendar-month-wheel");
+  months.children.at(-1).click();
+  picker.listeners.keydown({ key: "Escape", preventDefault() {} });
+  assert.equal(picker.hidden, true);
+  assert.equal(heading.textContent, initial);
+  heading.click();
+  months.children[0].listeners.keydown({ key: "End", preventDefault() {} });
+  elements.get("calendar-picker-done").click();
+  const now = new Date(new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Zagreb", year: "numeric", month: "2-digit", day: "2-digit",
+  }).format(new Date()) + "T00:00:00Z");
+  if (now.getUTCMonth() !== 11) assert.notEqual(heading.textContent, initial);
+});
 async function selectableCalendar() {
   const date = nextMonthDates();
   const app = await browser(() => new Response(JSON.stringify({

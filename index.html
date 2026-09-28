@@ -413,8 +413,15 @@
               <summary>View availability calendar</summary>
               <div class="calendar-toolbar">
                 <button type="button" id="calendar-prev" aria-label="Previous month">←</button>
-                <strong id="calendar-month" aria-live="polite"></strong>
+                <button type="button" id="calendar-month" aria-live="polite" aria-expanded="false" aria-controls="calendar-picker"></button>
                 <button type="button" id="calendar-next" aria-label="Next month">→</button>
+              </div>
+              <div id="calendar-picker" class="calendar-picker" hidden>
+                <div class="calendar-picker-columns">
+                  <div><span class="calendar-wheel-label" id="calendar-month-label">Month</span><div id="calendar-month-wheel" class="calendar-wheel" role="group" aria-labelledby="calendar-month-label"></div></div>
+                  <div><span class="calendar-wheel-label" id="calendar-year-label">Year</span><div id="calendar-year-wheel" class="calendar-wheel" role="group" aria-labelledby="calendar-year-label"></div></div>
+                </div>
+                <button type="button" id="calendar-picker-done">Done</button>
               </div>
               <p id="calendar-status" role="status"></p>
               <button type="button" id="calendar-retry" hidden>Try again</button>
